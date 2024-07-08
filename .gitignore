@@ -1,0 +1,65 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Node modules
+node_modules/
+
+# Virtual environment directory
+tuitionenv/
+
+# Python compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Alembic files
+alembic.ini
+
+# SQLite database
+app.db
+
+# Vercel and other deployment-specific files
+.vercel/
+dist/
+build/
+
+# IDE/Editor specific files
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Other environment files
+.env
+
+# Patch files
+restore-point.patch
+
+#html
+test.html
+Procfile
+
+#Ignore frontend build output if applicable
+build/
+out/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+
+test_email.py
