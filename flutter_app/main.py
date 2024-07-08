@@ -1,13 +1,13 @@
-# backend/main.py
+# flutter_app/main.py
 import uvicorn
 import os
 from dotenv import load_dotenv
 import logging
 from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from backend.routers import users, auth, countries, institution, contact
-from backend.database import engine, Base
-from backend.routers import session as session_router
+from flutter_app.routers import users, auth, countries, institution, contact
+from flutter_app.database import engine, Base
+from flutter_app.routers import session as session_router
 from fastapi.security import OAuth2PasswordBearer
 
 # Set up logging to stdout in case file logging fails
@@ -69,4 +69,4 @@ def read_root():
 
 # Run the application
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("flutter_app.main:app", host="0.0.0.0", port=8000)
