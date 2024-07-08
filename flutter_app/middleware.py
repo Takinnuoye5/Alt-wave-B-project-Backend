@@ -4,9 +4,9 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 import os
-from backend.database import get_db
-from backend.schemas.users import TokenData
-from backend.services import users as user_services
+from flutter_app.database import get_db
+from flutter_app.schemas.users import TokenData
+from flutter_app.services import users as user_services
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/signin")
 SECRET_KEY = os.getenv("SECRET_KEY", "mysecret")

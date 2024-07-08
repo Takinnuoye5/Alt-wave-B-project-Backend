@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, String, Text
-from backend.database import Base
-
+from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy.orm import relationship
+from flutter_app.database import Base
 
 class Contact(Base):
     __tablename__ = "contacts"
@@ -10,3 +10,6 @@ class Contact(Base):
     last_name = Column(String, index=True)
     email = Column(String, index=True)
     message = Column(Text, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+
+    user = relationship("User", back_populates="contacts")

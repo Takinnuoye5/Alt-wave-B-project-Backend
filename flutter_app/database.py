@@ -18,7 +18,7 @@ def get_db():
 
 # Ensure all models are imported here so that they are registered correctly
 def init_db():
-    import backend.models  # Import models module, not specific models
+    import flutter_app.models  # Import models module, not specific models
     
 
 # Call init_db() to initialize the database and create tables

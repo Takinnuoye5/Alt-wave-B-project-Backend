@@ -1,6 +1,6 @@
 # backend/services/session_service.py
 from sqlalchemy.orm import Session
-from backend.models import session as session_models
+from flutter_app.models import session as session_models
 from datetime import datetime
 
 class SessionService:

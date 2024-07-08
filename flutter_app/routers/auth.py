@@ -1,18 +1,18 @@
-from backend.services import users as user_services, session as session_services
+from flutter_app.services import users as user_services, session as session_services
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from backend.schemas.users import SignIn, Token, UserCreate, User  # Correct imports
-from backend.schemas.auth import GoogleOAuthCallback, OTPRequest, SendOTPRequest, Token, SignIn  # Import the GoogleOAuthCallback and OTPRequest schema
-from backend.database import get_db
+from flutter_app.schemas.users import Token, UserCreate, User  # Correct imports
+from flutter_app.schemas.auth import GoogleOAuthCallback, OTPRequest, SendOTPRequest  # Import the GoogleOAuthCallback and OTPRequest schema
+from flutter_app.database import get_db
 from google.oauth2 import id_token as google_id_token  # Rename the import to avoid conflict
 from google.auth.transport import requests as google_requests
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import jwt
 from datetime import datetime, timedelta
 import os
-from backend.utils.otp import generate_otp, send_otp_email, send_otp_sms
+from flutter_app.utils.otp import generate_otp, send_otp_email, send_otp_sms
 from dotenv import load_dotenv
-from backend.middleware import get_current_user  # Import the middleware function
+from flutter_app.middleware import get_current_user  # Import the middleware function
 import logging
 
 load_dotenv()

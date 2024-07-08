@@ -1,4 +1,4 @@
-# flutter_app/main.py
+# ALT-Wave-Backend/flutter_app/main.py
 import uvicorn
 import os
 from dotenv import load_dotenv
@@ -69,4 +69,4 @@ def read_root():
 
 # Run the application
 if __name__ == "__main__":
-    uvicorn.run("flutter_app.main:app", host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)

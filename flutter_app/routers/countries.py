@@ -2,8 +2,8 @@ from fastapi import APIRouter
 from typing import List
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException
-from backend.schemas.users import Country
-from backend.services.users import UserService
+from flutter_app.schemas.users import Country
+from flutter_app.services.users import UserService
 
 
 router = APIRouter()

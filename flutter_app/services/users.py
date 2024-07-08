@@ -1,10 +1,11 @@
-from backend.models import users, session as session_models
+# services/users.py
+from flutter_app.models import users, session as session_models
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from jose import jwt
 from typing import Optional
-from backend.utils import password as password_utils
-from backend.schemas import users as user_schemas
+from flutter_app.utils import password as password_utils
+from flutter_app.schemas import users as user_schemas
 import os
 import logging
 
@@ -13,7 +14,6 @@ ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 logger = logging.getLogger(__name__)
-
 
 class UserService:
     @staticmethod

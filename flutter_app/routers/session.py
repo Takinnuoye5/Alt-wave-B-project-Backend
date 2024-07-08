@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from backend.database import get_db
-from backend.services import session as session_services
+from flutter_app.database import get_db
+from flutter_app.services import session as session_services
 
 router = APIRouter()
 

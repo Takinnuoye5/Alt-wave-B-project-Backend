@@ -1,7 +1,7 @@
 import logging
 import inspect
 import requests
-from backend.config import settings
+from flutter_app.config import settings
 from passlib.context import CryptContext
 import os
 # Configure logging

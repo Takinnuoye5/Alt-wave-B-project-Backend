@@ -1,9 +1,7 @@
-# models/session.py
 from sqlalchemy import Column, Integer, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from backend.database import Base
-from .users import User  # Import the existing User model
+from flutter_app.database import Base
 
 class Session(Base):
     __tablename__ = "sessions"
