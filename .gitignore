@@ -27,6 +27,7 @@ alembic.ini
 
 # SQLite database
 app.db
+app_backup.db
 
 # Vercel and other deployment-specific files
 .vercel/
