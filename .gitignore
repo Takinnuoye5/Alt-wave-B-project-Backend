@@ -53,7 +53,7 @@ restore-point.patch
 
 #html
 test.html
-Procfile
+
 
 #Ignore frontend build output if applicable
 build/
