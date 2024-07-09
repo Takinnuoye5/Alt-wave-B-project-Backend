@@ -12,6 +12,7 @@ node_modules/
 
 # Virtual environment directory
 tuitionenv/
+flutterenv/
 
 # Python compiled files
 __pycache__/
