@@ -42,7 +42,6 @@ passlib==1.7.4
 pyasn1==0.6.0
 pyasn1_modules==0.4.0
 pycparser==2.22
-pydantic-extra-types==2.4.1
 pydantic-settings==2.2.0
 pydantic_core==2.14.6
 PyJWT==2.8.0
