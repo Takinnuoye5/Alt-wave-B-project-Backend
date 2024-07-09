@@ -67,4 +67,6 @@ def read_root():
     logger.debug("Root endpoint called")  # Debugging statement
     return {"message": "Welcome to the API"}
 
-
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
