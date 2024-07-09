@@ -16,7 +16,8 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Set the sqlalchemy.url value to the DATABASE_URL environment variable
-config.set_main_option('sqlalchemy.url', os.getenv('DATABASE_URL'))
+DATABASE_URL = os.getenv('DATABASE_URL')
+config.set_main_option('sqlalchemy.url', DATABASE_URL)
 
 target_metadata = Base.metadata
 
