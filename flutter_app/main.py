@@ -68,4 +68,5 @@ def read_root():
     return {"message": "Welcome to the API"}
 
 if __name__ == "__main__":
-    uvicorn.run("flutter_app.main:app", host="0.0.0.0", port=int(os.getenv("PORT", 8000)))
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
