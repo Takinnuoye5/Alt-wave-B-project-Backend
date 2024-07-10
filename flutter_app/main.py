@@ -2,7 +2,7 @@ import os
 import uvicorn
 import logging
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 
@@ -62,6 +62,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/signin")
 def read_root():
     logger.debug("Root endpoint called")  # Debugging statement
     return {"message": "Welcome to the API"}
+
+# Call init_db() to initialize the database and create tables
+init_db()
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
