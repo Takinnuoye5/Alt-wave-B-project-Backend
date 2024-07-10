@@ -6,7 +6,7 @@ from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from flutter_app.routers import users, auth, countries, institution, contact, session as session_router
-from flutter_app.database import Base, engine
+from flutter_app.database import Base, engine, init_db  # Ensure init_db is imported
 
 # Set up logging to stdout in case file logging fails
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
@@ -18,7 +18,11 @@ load_dotenv()
 # Initialize the FastAPI app
 app = FastAPI()
 
+# Create the database tables
 Base.metadata.create_all(bind=engine)
+
+# Call init_db() to initialize the database and create tables
+init_db()
 
 # Set up allowed origins for CORS
 origins = [
