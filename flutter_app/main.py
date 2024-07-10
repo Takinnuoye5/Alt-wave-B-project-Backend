@@ -16,11 +16,6 @@ logger = logging.getLogger(__name__)
 # Load environment variables from .env file
 load_dotenv()
 
-# Check if DATABASE_URL is set
-DATABASE_URL = os.getenv("DATABASE_URL")
-if DATABASE_URL is None:
-    raise ValueError("No DATABASE_URL environment variable set")
-
 # Initialize the FastAPI app
 app = FastAPI()
 
@@ -67,9 +62,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/signin")
 def read_root():
     logger.debug("Root endpoint called")  # Debugging statement
     return {"message": "Welcome to the API"}
-
-# Call init_db() to initialize the database and create tables
-init_db()
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))

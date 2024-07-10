@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 import os
 from dotenv import load_dotenv
 
-# Load environment variables from .env file if not already loaded
+# Load environment variables from .env file
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -28,3 +28,6 @@ def get_db():
 def init_db():
     import flutter_app.models  # Import models module, not specific models
     Base.metadata.create_all(bind=engine)
+
+# Call init_db() to initialize the database and create tables
+init_db()
