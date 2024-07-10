@@ -6,11 +6,11 @@ class InstitutionService:
     @staticmethod
     def create_institution(db: Session, institution: InstitutionCreate, user_id: int):
         db_institution = Institution(
-            schoolName=institution.schoolName,
-            countryName=institution.countryName,
+            school_name=institution.school_name,
+            country_name=institution.country_name,
             address=institution.address,
-            paymentType=institution.paymentType,
-            contactEmail=institution.contactEmail,
+            payment_type=institution.payment_type,
+            contact_email=institution.contact_email,
             user_id=user_id
         )
         db.add(db_institution)
