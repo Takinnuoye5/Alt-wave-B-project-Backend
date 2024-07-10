@@ -26,16 +26,14 @@ config = context.config
 fileConfig(config.config_file_name)
 
 # Set the sqlalchemy.url value to the DATABASE_URL environment variable
-database_url = os.getenv('DATABASE_URL')
-config.set_main_option('sqlalchemy.url', database_url)
+DATABASE_URL = os.getenv('DATABASE_URL')
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+config.set_main_option('sqlalchemy.url', DATABASE_URL)
 
 
-# Ensure the URL uses the correct dialect
-if database_url.startswith("postgres://"):
-    database_url = database_url.replace("postgres://", "postgresql://", 1)
+target_metadata = None
 
-
-target_metadata = Base.metadata
 
 def run_migrations_offline():
     url = config.get_main_option("sqlalchemy.url")
@@ -49,6 +47,7 @@ def run_migrations_offline():
     with context.begin_transaction():
         context.run_migrations()
 
+
 def run_migrations_online():
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
@@ -61,6 +60,7 @@ def run_migrations_online():
 
         with context.begin_transaction():
             context.run_migrations()
+            
 
 if context.is_offline_mode():
     run_migrations_offline()
