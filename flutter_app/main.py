@@ -31,9 +31,9 @@ origins = [
 # Configure CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Or list specific origins (e.g., your frontend URL)
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Make sure to include "OPTIONS"
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
@@ -60,7 +60,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/signin")
 # Root endpoint
 @app.get("/")
 def read_root():
-    logger.debug("Root endpoint called")  # Debugging statement
+    logger.debug("Root endpoint called")
     return {"message": "Welcome to the API"}
 
 # Call init_db() to initialize the database and create tables

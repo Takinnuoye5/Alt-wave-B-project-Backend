@@ -11,14 +11,11 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL is None:
     raise ValueError("No DATABASE_URL environment variable set")
 
+# Create the engine
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
 Base = declarative_base()
 
 def init_db():
     import flutter_app.models  # Ensure this import is correct
-    
-
-# Create the database tables
-Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
