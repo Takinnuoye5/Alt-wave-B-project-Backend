@@ -24,12 +24,28 @@ def create_institution(institution: schemas.InstitutionCreate, db: Session = Dep
 
 @router.get("/institutions/", response_model=list[schemas.Institution])
 def read_institutions(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    institutions = services.InstitutionService.get_institutions(db, current_user.id, skip=skip, limit=limit)
-    return institutions
+    try:
+        institutions = services.InstitutionService.get_institutions(db, current_user.id, skip=skip, limit=limit)
+        logger.info(f"Retrieved institutions: {institutions}")
+        return institutions
+    except HTTPException as e:
+        logger.error(f"HTTP Exception: {e.detail}")
+        raise e
+    except Exception as e:
+        logger.error(f"Unhandled Exception: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @router.get("/institutions/{institution_id}", response_model=schemas.Institution)
 def read_institution(institution_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    db_institution = services.InstitutionService.get_institution(db, current_user.id, institution_id)
-    if db_institution is None:
-        raise HTTPException(status_code=404, detail="Institution not found")
-    return db_institution
+    try:
+        db_institution = services.InstitutionService.get_institution(db, current_user.id, institution_id)
+        if db_institution is None:
+            raise HTTPException(status_code=404, detail="Institution not found")
+        logger.info(f"Retrieved institution: {db_institution}")
+        return db_institution
+    except HTTPException as e:
+        logger.error(f"HTTP Exception: {e.detail}")
+        raise e
+    except Exception as e:
+        logger.error(f"Unhandled Exception: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
