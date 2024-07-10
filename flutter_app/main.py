@@ -1,9 +1,8 @@
-# ALT-Wave-Backend/flutter_app/main.py
 import os
 import uvicorn
 import logging
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 
@@ -17,7 +16,10 @@ logger = logging.getLogger(__name__)
 # Load environment variables from .env file
 load_dotenv()
 
-
+# Check if DATABASE_URL is set
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL is None:
+    raise ValueError("No DATABASE_URL environment variable set")
 
 # Initialize the FastAPI app
 app = FastAPI()
