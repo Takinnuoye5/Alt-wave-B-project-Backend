@@ -1,14 +1,14 @@
 # ALT-Wave-Backend/flutter_app/main.py
-import uvicorn
 import os
-from dotenv import load_dotenv
+import uvicorn
 import logging
+from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from flutter_app.routers import users, auth, countries, institution, contact
-from flutter_app.database import engine, Base
-from flutter_app.routers import session as session_router
 from fastapi.security import OAuth2PasswordBearer
+
+from flutter_app.routers import users, auth, countries, institution, contact, session as session_router
+from flutter_app.database import Base, engine, init_db
 
 # Set up logging to stdout in case file logging fails
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
@@ -17,8 +17,9 @@ logger = logging.getLogger(__name__)
 # Load environment variables from .env file
 load_dotenv()
 
-# Create the database tables
-Base.metadata.create_all(bind=engine)
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL is None:
+    raise ValueError("No DATABASE_URL environment variable set")
 
 # Initialize the FastAPI app
 app = FastAPI()
@@ -66,6 +67,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/signin")
 def read_root():
     logger.debug("Root endpoint called")  # Debugging statement
     return {"message": "Welcome to the API"}
+
+# Call init_db() to initialize the database and create tables
+init_db()
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
