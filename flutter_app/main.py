@@ -17,9 +17,7 @@ logger = logging.getLogger(__name__)
 # Load environment variables from .env file
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-if DATABASE_URL is None:
-    raise ValueError("No DATABASE_URL environment variable set")
+
 
 # Initialize the FastAPI app
 app = FastAPI()

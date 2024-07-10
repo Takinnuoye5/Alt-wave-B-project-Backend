@@ -18,6 +18,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
+
 def get_db():
     db = SessionLocal()
     try:
@@ -27,4 +28,6 @@ def get_db():
 
 def init_db():
     import flutter_app.models  # Import models module, not specific models
-    Base.metadata.create_all(bind=engine)
+    
+#  Call init_db() to initialize the database and create tables
+init_db()
