@@ -5,9 +5,8 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
-
 from flutter_app.routers import users, auth, countries, institution, contact, session as session_router
-from flutter_app.database import Base, engine, init_db
+from flutter_app.database import Base, engine
 
 # Set up logging to stdout in case file logging fails
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
@@ -18,6 +17,8 @@ load_dotenv()
 
 # Initialize the FastAPI app
 app = FastAPI()
+
+Base.metadata.create_all(bind=engine)
 
 # Set up allowed origins for CORS
 origins = [
@@ -63,8 +64,6 @@ def read_root():
     logger.debug("Root endpoint called")
     return {"message": "Welcome to the API"}
 
-# Call init_db() to initialize the database and create tables
-init_db()
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
