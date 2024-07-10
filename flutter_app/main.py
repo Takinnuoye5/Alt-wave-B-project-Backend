@@ -6,23 +6,22 @@ from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from flutter_app.routers import users, auth, countries, institution, contact, session as session_router
-from flutter_app.database import Base, engine, init_db  # Ensure init_db is imported
+from flutter_app.database import Base, engine
 
 # Set up logging to stdout in case file logging fails
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
 logger = logging.getLogger(__name__)
 
 # Load environment variables from .env file
+logger.info("Loading environment variables...")
 load_dotenv()
 
 # Initialize the FastAPI app
+logger.info("Initializing FastAPI app...")
 app = FastAPI()
 
-# Create the database tables
+logger.info("Creating database tables if not exist...")
 Base.metadata.create_all(bind=engine)
-
-# Call init_db() to initialize the database and create tables
-init_db()
 
 # Set up allowed origins for CORS
 origins = [
@@ -52,6 +51,7 @@ async def log_requests(request: Request, call_next):
     return response
 
 # Include routers
+logger.info("Including routers...")
 app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(countries.router, prefix="/api/countries", tags=["countries"])
@@ -68,7 +68,7 @@ def read_root():
     logger.debug("Root endpoint called")
     return {"message": "Welcome to the API"}
 
-
 if __name__ == "__main__":
+    logger.info("Starting app...")
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)

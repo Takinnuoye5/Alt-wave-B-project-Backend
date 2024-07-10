@@ -8,16 +8,16 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-
-# Replace postgres:// with postgresql://
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+if DATABASE_URL is None:
+    raise ValueError("No DATABASE_URL environment variable set")
 
 # Create the engine
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
-
 
 def get_db():
     db = SessionLocal()
@@ -25,3 +25,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
+def init_db():
+    import flutter_app.models  # Ensure this import is correct
+    Base.metadata.create_all(bind=engine)
