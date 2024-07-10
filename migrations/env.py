@@ -1,7 +1,10 @@
 from logging.config import fileConfig
 import os
+import sys
 from sqlalchemy import engine_from_config, pool
 from alembic import context
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Import the Base from your application
 from flutter_app.database import Base
@@ -9,15 +12,28 @@ from flutter_app.models.users import User
 from flutter_app.models.contact import Contact
 from flutter_app.models.institution import Institution
 from flutter_app.models.session import Session
+from flutter_app.database import Base
+
+
+# Load environment variables
+from dotenv import load_dotenv
+load_dotenv()
+
 
 config = context.config
 
-if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+
+fileConfig(config.config_file_name)
 
 # Set the sqlalchemy.url value to the DATABASE_URL environment variable
-DATABASE_URL = os.getenv('DATABASE_URL')
-config.set_main_option('sqlalchemy.url', DATABASE_URL)
+database_url = os.getenv('DATABASE_URL')
+config.set_main_option('sqlalchemy.url', database_url)
+
+
+# Ensure the URL uses the correct dialect
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
 
 target_metadata = Base.metadata
 
