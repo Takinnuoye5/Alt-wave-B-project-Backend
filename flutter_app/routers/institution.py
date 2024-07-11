@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Form, Request
 from sqlalchemy.orm import Session
 import logging
+from pydantic import EmailStr
 from flutter_app import schemas, services
 from flutter_app.database import get_db
 
