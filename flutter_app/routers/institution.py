@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Form, Request
 from sqlalchemy.orm import Session
 import logging
 from flutter_app import models, schemas, services
@@ -9,10 +9,23 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 @router.post("/institutions/", response_model=schemas.Institution)
-def create_institution(institution: schemas.InstitutionCreate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+async def create_institution(request: Request, db: Session = Depends(get_db)):
+    if request.headers.get("Content-Type") == "application/x-www-form-urlencoded":
+        form = await request.form()
+        institution = schemas.InstitutionCreate(
+            school_name=form.get("school_name"),
+            country_name=form.get("country_name"),
+            address=form.get("address"),
+            payment_type=form.get("payment_type"),
+            contact_email=form.get("contact_email")
+        )
+    else:
+        json_data = await request.json()
+        institution = schemas.InstitutionCreate(**json_data)
+    
     try:
         logger.info(f"Received data: {institution}")
-        created_institution = services.InstitutionService.create_institution(db, institution, current_user.id)
+        created_institution = services.InstitutionService.create_institution(db, institution, None)
         logger.info(f"Created institution: {created_institution}")
         return created_institution
     except HTTPException as e:

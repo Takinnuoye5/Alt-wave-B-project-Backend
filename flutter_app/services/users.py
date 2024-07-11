@@ -18,7 +18,10 @@ logger = logging.getLogger(__name__)
 class UserService:
     @staticmethod
     def get_user_by_email(db: Session, email: str):
-        return db.query(users.User).filter(users.User.email == email).first()
+        logger.debug(f"Fetching user with email: {email}")
+        user = db.query(users.User).filter(users.User.email == email).first()
+        logger.debug(f"User fetched: {user}")
+        return user
 
     @staticmethod
     def create_user(db: Session, user: user_schemas.UserCreate):
@@ -33,17 +36,27 @@ class UserService:
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
+        logger.debug(f"User created: {db_user}")
         return db_user
 
     @staticmethod
     def get_user(db: Session, user_id: int):
-        return db.query(users.User).filter(users.User.id == user_id).first()
+        logger.debug(f"Fetching user with ID: {user_id}")
+        user = db.query(users.User).filter(users.User.id == user_id).first()
+        logger.debug(f"User fetched: {user}")
+        return user
 
     @staticmethod
     def authenticate_user(db: Session, email: str, plain_password: str):
+        logger.debug(f"Authenticating user with email: {email}")
         user = UserService.get_user_by_email(db, email)
-        if not user or not password_utils.verify_password(plain_password, user.hashed_password):
+        if not user:
+            logger.debug(f"No user found with email: {email}")
             return None
+        if not password_utils.verify_password(plain_password, user.hashed_password):
+            logger.debug(f"Invalid password for user: {email}")
+            return None
+        logger.debug(f"User authenticated: {email}")
         return user
 
     @staticmethod

@@ -1,13 +1,14 @@
-# flutter_app/routers/auth.py
-from flutter_app.services import users as user_services, session as session_services
-from fastapi import APIRouter, Depends, HTTPException, status
+# routers/auth.py
+from fastapi import APIRouter, Depends, HTTPException, status, Request, Form
 from sqlalchemy.orm import Session
-from flutter_app.schemas.users import Token, UserCreate, User  # Correct imports
+from pydantic import ValidationError
+from flutter_app.schemas.users import Token, UserCreate, UserSignIn, User  # Correct imports
 from flutter_app.schemas.auth import GoogleOAuthCallback, OTPRequest, SendOTPRequest  # Import the GoogleOAuthCallback and OTPRequest schema
 from flutter_app.database import get_db
+from flutter_app.services import users as user_services, session as session_services
 from google.oauth2 import id_token as google_id_token  # Rename the import to avoid conflict
 from google.auth.transport import requests as google_requests
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from datetime import datetime, timedelta
 import os
@@ -29,20 +30,45 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 @router.post("/signin", response_model=Token)
-async def sign_in(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = user_services.UserService.authenticate_user(db, form_data.username, form_data.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    access_token = user_services.UserService.create_access_token(data={"sub": user.email})
-    
-    # Record session start
-    session = session_services.SessionService.create_session(db, user.id)
-    
-    return {"access_token": access_token, "token_type": "bearer", "session_id": session.id}
+async def sign_in(
+    request: Request,
+    db: Session = Depends(get_db),
+    username: str = Form(None),
+    password: str = Form(None)
+):
+    try:
+        content_type = request.headers.get("Content-Type")
+        if content_type == "application/x-www-form-urlencoded":
+            login_data = UserSignIn(email=username, password=password)
+        elif content_type == "application/json":
+            json_data = await request.json()
+            login_data = UserSignIn(**json_data)
+        else:
+            raise HTTPException(status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, detail="Unsupported content type")
+
+        logger.info(f"Login attempt for {login_data.email}")
+        db_user = user_services.UserService.authenticate_user(db, login_data.email, login_data.password)
+        if not db_user:
+            logger.error(f"Invalid credentials for {login_data.email}")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+        
+        token = user_services.UserService.create_access_token({"sub": db_user.email})
+        logger.info(f"Created token for {db_user.email}: {token}")
+        return {
+            "access_token": token,
+            "token_type": "bearer",
+            "session_id": session_services.SessionService.create_session(db, db_user.id).id
+        }
+    except ValidationError as e:
+        errors = [{"field": err["loc"][-1], "message": err["msg"]} for err in e.errors()]
+        logger.error(f"Validation error during login: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail={"errors": errors})
+    except HTTPException as e:
+        logger.error(f"Error during login: {e.detail}")
+        raise e
+    except Exception as e:
+        logger.error(f"Unexpected error during login: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error")
 
 @router.post("/signout")
 async def sign_out(session_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
