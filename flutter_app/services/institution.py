@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 class InstitutionService:
     @staticmethod
-    def create_institution(db: Session, institution: InstitutionCreate, user_id: int):
+    def create_institution(db: Session, institution: InstitutionCreate, user_id: int = None):
         try:
             db_institution = Institution(
                 school_name=institution.school_name,
@@ -28,20 +28,20 @@ class InstitutionService:
             raise
 
     @staticmethod
-    def get_institutions(db: Session, user_id: int, skip: int = 0, limit: int = 10):
+    def get_institutions(db: Session, skip: int = 0, limit: int = 10):
         try:
-            institutions = db.query(Institution).filter(Institution.user_id == user_id).offset(skip).limit(limit).all()
-            logger.info(f"Retrieved institutions for user_id {user_id}: {institutions}")
+            institutions = db.query(Institution).offset(skip).limit(limit).all()
+            logger.info(f"Retrieved institutions: {institutions}")
             return institutions
         except Exception as e:
             logger.error(f"Error retrieving institutions: {e}")
             raise
 
     @staticmethod
-    def get_institution(db: Session, user_id: int, institution_id: int):
+    def get_institution(db: Session, institution_id: int):
         try:
-            institution = db.query(Institution).filter(Institution.id == institution_id, Institution.user_id == user_id).first()
-            logger.info(f"Retrieved institution {institution_id} for user_id {user_id}: {institution}")
+            institution = db.query(Institution).filter(Institution.id == institution_id).first()
+            logger.info(f"Retrieved institution {institution_id}: {institution}")
             return institution
         except Exception as e:
             logger.error(f"Error retrieving institution: {e}")

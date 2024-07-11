@@ -1,23 +1,29 @@
 from fastapi import APIRouter, Depends, HTTPException, Form, Request
 from sqlalchemy.orm import Session
 import logging
-from flutter_app import models, schemas, services
+from flutter_app import schemas, services
 from flutter_app.database import get_db
-from flutter_app.middleware import get_current_user
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 @router.post("/institutions/", response_model=schemas.Institution)
-async def create_institution(request: Request, db: Session = Depends(get_db)):
+async def create_institution(
+    request: Request,
+    db: Session = Depends(get_db),
+    school_name: str = Form(None),
+    country_name: str = Form(None),
+    address: str = Form(None),
+    payment_type: str = Form(None),
+    contact_email: EmailStr = Form(None)
+):
     if request.headers.get("Content-Type") == "application/x-www-form-urlencoded":
-        form = await request.form()
         institution = schemas.InstitutionCreate(
-            school_name=form.get("school_name"),
-            country_name=form.get("country_name"),
-            address=form.get("address"),
-            payment_type=form.get("payment_type"),
-            contact_email=form.get("contact_email")
+            school_name=school_name,
+            country_name=country_name,
+            address=address,
+            payment_type=payment_type,
+            contact_email=contact_email
         )
     else:
         json_data = await request.json()
@@ -25,7 +31,7 @@ async def create_institution(request: Request, db: Session = Depends(get_db)):
     
     try:
         logger.info(f"Received data: {institution}")
-        created_institution = services.InstitutionService.create_institution(db, institution, None)
+        created_institution = services.InstitutionService.create_institution(db, institution, user_id=None)
         logger.info(f"Created institution: {created_institution}")
         return created_institution
     except HTTPException as e:
@@ -36,9 +42,9 @@ async def create_institution(request: Request, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @router.get("/institutions/", response_model=list[schemas.Institution])
-def read_institutions(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+def read_institutions(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     try:
-        institutions = services.InstitutionService.get_institutions(db, current_user.id, skip=skip, limit=limit)
+        institutions = services.InstitutionService.get_institutions(db, skip=skip, limit=limit)
         logger.info(f"Retrieved institutions: {institutions}")
         return institutions
     except HTTPException as e:
@@ -49,9 +55,9 @@ def read_institutions(skip: int = 0, limit: int = 10, db: Session = Depends(get_
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @router.get("/institutions/{institution_id}", response_model=schemas.Institution)
-def read_institution(institution_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+def read_institution(institution_id: int, db: Session = Depends(get_db)):
     try:
-        db_institution = services.InstitutionService.get_institution(db, current_user.id, institution_id)
+        db_institution = services.InstitutionService.get_institution(db, institution_id)
         if db_institution is None:
             raise HTTPException(status_code=404, detail="Institution not found")
         logger.info(f"Retrieved institution: {db_institution}")
