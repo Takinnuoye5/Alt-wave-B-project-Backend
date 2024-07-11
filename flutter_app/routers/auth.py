@@ -1,3 +1,4 @@
+# flutter_app/routers/auth.py
 from flutter_app.services import users as user_services, session as session_services
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
