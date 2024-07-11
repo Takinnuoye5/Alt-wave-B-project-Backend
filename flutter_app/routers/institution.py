@@ -12,19 +12,19 @@ logger = logging.getLogger(__name__)
 async def create_institution(
     request: Request,
     db: Session = Depends(get_db),
-    school_name: str = Form(None),
-    country_name: str = Form(None),
+    schoolName: str = Form(None),
+    countryName: str = Form(None),
     address: str = Form(None),
-    payment_type: str = Form(None),
-    contact_email: EmailStr = Form(None)
+    paymentType: str = Form(None),
+    contactEmail: EmailStr = Form(None)
 ):
     if request.headers.get("Content-Type") == "application/x-www-form-urlencoded":
         institution = schemas.InstitutionCreate(
-            school_name=school_name,
-            country_name=country_name,
+            school_name=schoolName,
+            country_name=countryName,
             address=address,
-            payment_type=payment_type,
-            contact_email=contact_email
+            payment_type=paymentType,
+            contact_email=contactEmail
         )
     else:
         json_data = await request.json()
