@@ -1,7 +1,7 @@
 from flutter_app.services import users as user_services, session as session_services
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from flutter_app.schemas.users import Token, UserCreate, User  # Correct imports
+from flutter_app.schemas.users import Token, UserCreate, UserSignIn  # Correct imports
 from flutter_app.schemas.auth import GoogleOAuthCallback, OTPRequest, SendOTPRequest  # Import the GoogleOAuthCallback and OTPRequest schema
 from flutter_app.database import get_db
 from google.oauth2 import id_token as google_id_token  # Rename the import to avoid conflict
@@ -28,8 +28,8 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 @router.post("/signin", response_model=Token)
-async def sign_in(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = user_services.UserService.authenticate_user(db, form_data.username, form_data.password)
+async def sign_in(user_sign_in: UserSignIn, db: Session = Depends(get_db)):
+    user = user_services.UserService.authenticate_user(db, user_sign_in.email, user_sign_in.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
