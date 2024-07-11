@@ -20,11 +20,11 @@ async def create_institution(
 ):
     if request.headers.get("Content-Type") == "application/x-www-form-urlencoded":
         institution = schemas.InstitutionCreate(
-            school_name=schoolName,
-            country_name=countryName,
+            schoolName=schoolName,
+            countryName=countryName,
             address=address,
-            payment_type=paymentType,
-            contact_email=contactEmail
+            paymentType=paymentType,
+            contactEmail=contactEmail
         )
     else:
         json_data = await request.json()
