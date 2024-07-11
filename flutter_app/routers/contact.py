@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from pydantic import EmailStr
 from flutter_app import schemas, services
 from flutter_app.database import get_db
-from flutter_app.auth import get_current_user
+from flutter_app.middleware import get_current_user
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
