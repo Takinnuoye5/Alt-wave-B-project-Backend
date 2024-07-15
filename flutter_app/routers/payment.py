@@ -20,6 +20,7 @@ async def create_payment(
     current_user: User = Depends(get_current_user),
     payment_by: str = Form(None),
     payment_for: str = Form(None),
+    payment_method: str = Form(None),
     country_from: str = Form(None),
     amount: condecimal(max_digits=10, decimal_places=2) = Form(None)
 ):
@@ -27,6 +28,7 @@ async def create_payment(
         payment = schemas.PaymentCreate(
             payment_by=payment_by,
             payment_for=payment_for,
+            payment_method=payment_method,
             country_from=country_from,
             amount=Decimal(amount)
         )
