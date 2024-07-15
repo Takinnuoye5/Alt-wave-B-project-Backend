@@ -2,12 +2,14 @@ from sqlalchemy.orm import Session
 from flutter_app.models.institution import Institution
 from flutter_app.schemas.institution import InstitutionCreate
 import logging
+import uuid
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
 class InstitutionService:
     @staticmethod
-    def create_institution(db: Session, institution: InstitutionCreate, user_id: int = None):
+    def create_institution(db: Session, institution: InstitutionCreate, user_id: int =  Optional[uuid.UUID]):
         try:
             db_institution = Institution(
                 school_name=institution.school_name,
@@ -45,4 +47,14 @@ class InstitutionService:
             return institution
         except Exception as e:
             logger.error(f"Error retrieving institution: {e}")
+            raise
+
+    @staticmethod
+    def get_institutions_by_country(db: Session, country_name: str):
+        try:
+            institutions = db.query(Institution).filter(Institution.country_name == country_name).all()
+            logger.info(f"Retrieved institutions for country {country_name}: {institutions}")
+            return institutions
+        except Exception as e:
+            logger.error(f"Error retrieving institutions: {e}")
             raise

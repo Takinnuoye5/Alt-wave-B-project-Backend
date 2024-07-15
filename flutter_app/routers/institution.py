@@ -69,3 +69,17 @@ def read_institution(institution_id: int, db: Session = Depends(get_db)):
     except Exception as e:
         logger.error(f"Unhandled Exception: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
+    
+    
+@router.get("/institutions/", response_model=list[schemas.Institution])
+async def get_institutions_by_country(country_name: str, db: Session = Depends(get_db)):
+    try:
+        institutions = services.InstitutionService.get_institutions_by_country(db, country_name)
+        logger.info(f"Retrieved institutions: {institutions}")
+        return institutions
+    except HTTPException as e:
+        logger.error(f"HTTP Exception: {e.detail}")
+        raise e
+    except Exception as e:
+        logger.error(f"Unhandled Exception: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")

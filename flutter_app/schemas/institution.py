@@ -1,4 +1,6 @@
 from pydantic import BaseModel, Field, EmailStr
+from uuid import UUID
+from typing import Optional
 
 class InstitutionBase(BaseModel):
     school_name: str = Field(..., alias="schoolName")
@@ -15,7 +17,7 @@ class InstitutionCreate(InstitutionBase):
     pass
 
 class Institution(InstitutionBase):
-    id: int
+    id: UUID
 
     class Config:
         orm_mode = True

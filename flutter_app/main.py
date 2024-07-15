@@ -1,4 +1,3 @@
-# main.py
 import os
 import uvicorn
 import logging
@@ -6,10 +5,8 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
-from fastapi.exceptions import RequestValidationError
-from flutter_app.routers import users, auth, countries, institution, contact, session as session_router
+from flutter_app.routers import users, auth, countries, institution, contact, session as session_router, payment, payment_method, student  # Add your new routers here
 from flutter_app.database import Base, engine
-from flutter_app.exception import validation_exception_handler
 
 # Set up logging to stdout in case file logging fails
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
@@ -61,9 +58,9 @@ app.include_router(countries.router, prefix="/api/countries", tags=["countries"]
 app.include_router(institution.router, prefix="/api/institution", tags=["institution"])
 app.include_router(contact.router, prefix="/api/contact", tags=["contact"])
 app.include_router(session_router.router, prefix="/api", tags=["sessions"])
-
-# Add validation exception handler
-app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.include_router(payment.router, prefix="/api/payment", tags=["payment"])  # New route for payment
+app.include_router(payment_method.router, prefix="/api/payment_method", tags=["payment_method"])  # New route for payment method
+app.include_router(student.router, prefix="/api/student", tags=["student"])  # New route for student
 
 # OAuth2PasswordBearer setup
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/signin")

@@ -1,6 +1,9 @@
 from .institution import Institution, InstitutionCreate, InstitutionBase
 from .users import User, UserCreate, UserBase, SignIn, Token
 from .contact import Contact, ContactCreate
+from .payment import Payment, PaymentCreate
+from .payment_method import PaymentMethod, PaymentMethodCreate
+from .student import Student
 
 from pydantic import BaseModel
 

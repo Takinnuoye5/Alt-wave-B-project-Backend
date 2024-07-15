@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, validator
 from typing import Optional
-
+from uuid import UUID
 
 class TokenData(BaseModel):
     email: Optional[str] = None
@@ -24,7 +24,7 @@ class UserCreate(UserBase):
 
 
 class User(UserBase):
-    id: int
+    id: UUID
 
     class Config:
         orm_mode = True

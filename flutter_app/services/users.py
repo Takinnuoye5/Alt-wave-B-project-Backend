@@ -1,5 +1,5 @@
 # services/users.py
-from flutter_app.models import users, session as session_models
+from flutter_app.models import users, session as session_models, User
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from jose import jwt
@@ -8,6 +8,7 @@ from flutter_app.utils import password as password_utils
 from flutter_app.schemas import users as user_schemas
 import os
 import logging
+import uuid
 
 SECRET_KEY = os.getenv("SECRET_KEY", "mysecret")
 ALGORITHM = os.getenv("ALGORITHM")
@@ -27,6 +28,7 @@ class UserService:
     def create_user(db: Session, user: user_schemas.UserCreate):
         hashed_password = password_utils.hash_password(user.password)
         db_user = users.User(
+            id=uuid.uuid4(),
             email=user.email,
             first_name=user.first_name,
             last_name=user.last_name,
@@ -40,7 +42,7 @@ class UserService:
         return db_user
 
     @staticmethod
-    def get_user(db: Session, user_id: int):
+    def get_user(db: Session, user_id: uuid.UUID) ->  Optional [User]:
         logger.debug(f"Fetching user with ID: {user_id}")
         user = db.query(users.User).filter(users.User.id == user_id).first()
         logger.debug(f"User fetched: {user}")
@@ -72,34 +74,9 @@ class UserService:
         logger.info(f"Encoded JWT: {encoded_jwt}")
         return encoded_jwt
 
+ 
     @staticmethod
-    def create_session(db: Session, user_id: int):
-        db_session = session_models.Session(user_id=user_id)
-        db.add(db_session)
-        db.commit()
-        db.refresh(db_session)
-        return db_session
-
-    @staticmethod
-    def end_session(db: Session, session_id: int):
-        db_session = db.query(session_models.Session).filter(session_models.Session.id == session_id).first()
-        if db_session:
-            db_session.end_time = datetime.utcnow()
-            db_session.is_active = False
-            db.commit()
-            db.refresh(db_session)
-        return db_session
-
-    @staticmethod
-    def get_active_sessions(db: Session):
-        return db.query(session_models.Session).filter_by(is_active=True).all()
-
-    @staticmethod
-    def get_user_sessions(db: Session, user_id: int):
-        return db.query(session_models.Session).filter_by(user_id=user_id).all()
-    
-    @staticmethod
-    def delete_user(db: Session, user_id: int):
+    def delete_user(db: Session, user_id: uuid.UUID) -> Optional[User]:
         user = UserService.get_user(db, user_id)
         if user:
             db.delete(user)
