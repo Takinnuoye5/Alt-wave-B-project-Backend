@@ -7,7 +7,7 @@ from flutter_app.database import Base
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True, unique=True)
     email = Column(String, unique=True, index=True, nullable=False)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
@@ -19,4 +19,5 @@ class User(Base):
     institutions = relationship("Institution", back_populates="user")
     sessions = relationship("Session", back_populates="user")
     payment_methods = relationship("PaymentMethod", back_populates="user")
-
+    payments = relationship("Payment", back_populates="user")
+    students = relationship("Student", back_populates="user")

@@ -1,4 +1,3 @@
-# models/student.py
 import uuid
 from sqlalchemy import Column, String, Date, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID

@@ -4,7 +4,6 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from flutter_app.database import Base
 
-
 class PaymentMethod(Base):
     __tablename__ = "payment_methods"
 

@@ -9,6 +9,7 @@ class PaymentBase(BaseModel):
     payment_for: str = Field(..., alias="paymentFor")
     country_from: str = Field(..., alias="countryFrom")
     amount: condecimal(max_digits=10, decimal_places=2)
+    payment_method: Optional[str] = None  # Add this field if you want to store the payment method
 
     class Config:
         orm_mode = True

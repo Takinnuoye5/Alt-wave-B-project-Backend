@@ -3,8 +3,11 @@ from fastapi import APIRouter, Depends, HTTPException, Form, Request
 from sqlalchemy.orm import Session
 from pydantic import condecimal
 from decimal import Decimal
-from flutter_app import schemas, services
+from flutter_app import schemas
+from flutter_app.services.payment import PaymentService  # Correct import
 from flutter_app.database import get_db
+from flutter_app.middleware import get_current_user
+from flutter_app.models import User
 import logging
 
 router = APIRouter()
@@ -14,6 +17,7 @@ logger = logging.getLogger(__name__)
 async def create_payment(
     request: Request,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
     payment_by: str = Form(None),
     payment_for: str = Form(None),
     country_from: str = Form(None),
@@ -32,7 +36,7 @@ async def create_payment(
     
     try:
         logger.info(f"Received data: {payment}")
-        created_payment = services.PaymentService.create_payment(db, payment, user_id=None, institution_id=None)
+        created_payment = PaymentService.create_payment(db, payment, user_id=current_user.id, institution_id=None)
         logger.info(f"Created payment: {created_payment}")
         return created_payment
     except HTTPException as e:

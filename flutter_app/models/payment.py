@@ -1,4 +1,3 @@
-# models/payment.py
 import uuid
 from sqlalchemy import Column, String, Numeric, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
@@ -13,6 +12,7 @@ class Payment(Base):
     payment_for = Column(String, index=True)
     country_from = Column(String, index=True)
     amount = Column(Numeric(10, 2))
+    payment_method = Column(String, index=True)  
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'))
     institution_id = Column(UUID(as_uuid=True), ForeignKey('institutions.id'))
 

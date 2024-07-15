@@ -7,7 +7,7 @@ from flutter_app.database import Base
 class Institution(Base):
     __tablename__ = "institutions"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True, unique=True)
     school_name = Column(String, index=True)
     country_name = Column(String, index=True)
     address = Column(String, index=True)
@@ -16,3 +16,4 @@ class Institution(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'))
 
     user = relationship("User", back_populates="institutions")
+    payments = relationship("Payment", back_populates="institution")

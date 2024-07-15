@@ -14,9 +14,12 @@ class StudentBase(BaseModel):
     class Config:
         orm_mode = True
         allow_population_by_field_name = True
+        
 
 class StudentCreate(StudentBase):
     pass
 
+
 class Student(StudentBase):
     id: UUID
+    user_id: UUID
