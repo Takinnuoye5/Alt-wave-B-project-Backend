@@ -8,8 +8,8 @@ load_dotenv()
 
 # Set the sqlalchemy.url value to the DATABASE_URL environment variable
 config = context.config
-database_url = os.getenv('DATABASE_URL')
-config.set_main_option('sqlalchemy.url', database_url)
+DATABASE_URL = os.getenv('DATABASE_URL')
+config.set_main_option('sqlalchemy.url', DATABASE_URL)
 
 fileConfig(config.config_file_name)
 
