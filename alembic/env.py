@@ -12,16 +12,15 @@ from flutter_app.models.users import User
 from flutter_app.models.contact import Contact
 from flutter_app.models.institution import Institution
 from flutter_app.models.session import Session
-from flutter_app.database import Base
-
+from flutter_app.models.payment import Payment
+from flutter_app.models.payment_method import PaymentMethod
+from flutter_app.models.student import Student
 
 # Load environment variables
 from dotenv import load_dotenv
 load_dotenv()
 
-
 config = context.config
-
 
 fileConfig(config.config_file_name)
 
@@ -31,9 +30,7 @@ if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 config.set_main_option('sqlalchemy.url', DATABASE_URL)
 
-
 target_metadata = Base.metadata
-
 
 def run_migrations_offline():
     url = config.get_main_option("sqlalchemy.url")
@@ -47,7 +44,6 @@ def run_migrations_offline():
     with context.begin_transaction():
         context.run_migrations()
 
-
 def run_migrations_online():
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
@@ -60,7 +56,6 @@ def run_migrations_online():
 
         with context.begin_transaction():
             context.run_migrations()
-
 
 if context.is_offline_mode():
     run_migrations_offline()
