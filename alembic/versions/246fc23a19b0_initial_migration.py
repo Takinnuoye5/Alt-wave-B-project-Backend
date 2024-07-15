@@ -56,7 +56,7 @@ def upgrade() -> None:
         sa.Column('payment_by', sa.String(), nullable=True),
         sa.Column('payment_for', sa.String(), nullable=True),
         sa.Column('country_from', sa.String(), nullable=True),
-        sa.Column('amount', sa.Numeric(precision=10, scale=2), nullable=True),
+        sa.Column('amount', sa.Numeric(10, 2), nullable=True),
         sa.Column('payment_method', sa.String(), nullable=True),
         sa.Column('user_id', UUID(as_uuid=True), sa.ForeignKey('users.id', ondelete='CASCADE'), nullable=True),
         sa.Column('institution_id', UUID(as_uuid=True), sa.ForeignKey('institutions.id', ondelete='CASCADE'), nullable=True),
