@@ -24,7 +24,7 @@ pip-log.txt
 pip-delete-this-directory.txt
 
 # Alembic files
-alembic.ini
+
 
 # SQLite database
 app.db
