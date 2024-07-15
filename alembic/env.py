@@ -8,8 +8,10 @@ load_dotenv()
 
 # Set the sqlalchemy.url value to the DATABASE_URL environment variable
 config = context.config
-DATABASE_URL = os.getenv('DATABASE_URL')
-config.set_main_option('sqlalchemy.url', DATABASE_URL)
+database_url = os.getenv('DATABASE_URL')
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+config.set_main_option('sqlalchemy.url', database_url)
 
 fileConfig(config.config_file_name)
 
@@ -19,6 +21,7 @@ from flutter_app.models.users import User
 from flutter_app.models.contact import Contact
 from flutter_app.models.institution import Institution
 from flutter_app.models.session import Session
+from flutter_app.models.payment import Payment  # Include other models as needed
 
 target_metadata = Base.metadata
 
