@@ -1,20 +1,16 @@
-import uuid
-from sqlalchemy import Column, String, Numeric, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, ForeignKey, Numeric
 from sqlalchemy.orm import relationship
-from flutter_app.database import Base
+from flutter_app.models.base_model import BaseTableModel
 
-class Payment(Base):
+
+class Payment(BaseTableModel):
     __tablename__ = "payments"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-    payment_by = Column(String, index=True)
-    payment_for = Column(String, index=True)
-    country_from = Column(String, index=True)
-    amount = Column(Numeric(10, 2))
-    payment_method = Column(String, index=True)  
-    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'))
-    institution_id = Column(UUID(as_uuid=True), ForeignKey('institutions.id'))
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    amount = Column(Numeric, nullable=False)
+    currency = Column(String, nullable=False)
+    status = Column(String, nullable=False)  # e.g., completed, pending
+    method = Column(String, nullable=False)  # e.g., credit card, PayPal
+    transaction_id = Column(String, unique=True, nullable=False)
 
     user = relationship("User", back_populates="payments")
-    institution = relationship("Institution", back_populates="payments")

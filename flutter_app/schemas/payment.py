@@ -1,22 +1,50 @@
-# schemas/payment.py
-from pydantic import BaseModel, Field, condecimal
+from pydantic import BaseModel, EmailStr
+from typing import List
 from typing import Optional
-from decimal import Decimal
-from uuid import UUID
+from datetime import datetime
 
-class PaymentBase(BaseModel):
-    payment_by: str = Field(..., alias="paymentBy")
-    payment_for: str = Field(..., alias="paymentFor")
-    country_from: str = Field(..., alias="countryFrom")
-    amount: condecimal(max_digits=10, decimal_places=2)
-    payment_method: Optional[str] = None  # Add this field if you want to store the payment method
+
+class PaymentResponse(BaseModel):
+    id: str
+    user_id: str
+    amount: float
+    currency: str
+    status: str
+    method: str
+    transaction_id: str
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+        from_attributes = True
 
-class PaymentCreate(PaymentBase):
-    pass
 
-class Payment(PaymentBase):
-    id: UUID
+class PaymentBase(BaseModel):
+    amount: float
+    currency: str
+    status: str
+    method: str
+    created_at: datetime
+
+
+class PaymentsData(BaseModel):
+    current_page: int
+    total_pages: int
+    limit: int
+    total_items: int
+    Payments: List[PaymentBase]
+
+
+class PaymentListResponse(BaseModel):
+    status_code: int = 200
+    success: bool
+    message: str
+    data: PaymentsData
+
+
+class PaymentDetail(BaseModel):
+    institution_id: str
+    plan_id: str
+    full_name: str
+    billing_option: str
+    redirect_url: str

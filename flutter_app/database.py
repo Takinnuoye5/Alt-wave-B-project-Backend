@@ -26,6 +26,7 @@ Base = declarative_base()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def log_db_error(func):
     def wrapper(*args, **kwargs):
         try:
@@ -33,7 +34,9 @@ def log_db_error(func):
         except SQLAlchemyError as e:
             logger.error(f"Database error: {e}")
             raise
+
     return wrapper
+
 
 def get_db():
     db = SessionLocal()
@@ -42,7 +45,9 @@ def get_db():
     finally:
         db.close()
 
+
 @log_db_error
 def init_db():
     import flutter_app.models  # Ensure this import is correct
+
     Base.metadata.create_all(bind=engine)

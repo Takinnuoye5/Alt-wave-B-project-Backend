@@ -1,15 +1,19 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy import Column, String, Text, ForeignKey
 from sqlalchemy.orm import relationship
-from flutter_app.database import Base
+from sqlalchemy.sql import func
+from flutter_app.models.base_model import BaseTableModel
 
-class Contact(Base):
+
+class Contact(BaseTableModel):
     __tablename__ = "contacts"
 
-    id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String, index=True)
     last_name = Column(String, index=True)
     email = Column(String, index=True)
-    message = Column(Text, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    message = Column(Text, nullable=False)
+    phone_number = Column(String, nullable=True)
+    user_id = Column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=True
+    )
 
     user = relationship("User", back_populates="contacts")

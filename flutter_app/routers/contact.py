@@ -1,54 +1,77 @@
-from fastapi import APIRouter, Depends, HTTPException, Form, Request
-import logging
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
-from pydantic import EmailStr
-from flutter_app import schemas, services, models
-from flutter_app.database import get_db
-from flutter_app.middleware import get_current_user
+from typing import Annotated, Optional
+from flutter_app.db.database import get_db
+from flutter_app.core.responses import SUCCESS
+from flutter_app.utils.success_response import success_response
+from flutter_app.services.contact_us import contact_us_service
+from flutter_app.schemas.contact import ContactCreate, ContactResponseSchema
+from fastapi.encoders import jsonable_encoder
+from flutter_app.services.users import user_service
+from flutter_app.models import User
 
-router = APIRouter()
-logger = logging.getLogger(__name__)
+contact_us = APIRouter(prefix="/contact", tags=["Contact-Us"])
 
-@router.post("/contacts/", response_model=schemas.Contact)
-async def create_contact(
-    request: Request,
-    db: Session = Depends(get_db),
-    first_name: str = Form(None),
-    last_name: str = Form(None),
-    email: EmailStr = Form(None),
-    message: str = Form(None)
+
+# CREATE
+@contact_us.post(
+    "",
+    response_model=success_response,
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        201: {"description": "Contact us message created successfully"},
+        422: {"description": "Validation Error"},
+    },
+)
+async def create_contact_us(
+    data: ContactCreate,
+    db: Annotated[Session, Depends(get_db)]
 ):
-    if request.headers.get("Content-Type") == "application/x-www-form-urlencoded":
-        contact = schemas.ContactCreate(
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            message=message
-        )
-    else:
-        json_data = await request.json()
-        contact = schemas.ContactCreate(**json_data)
+    """Add a new contact us message."""
+    new_contact_us_message = contact_us_service.create(db, data)
+    response_data = {
+        "id": new_contact_us_message.id,
+        "first_name": new_contact_us_message.first_name,
+        "last_name": new_contact_us_message.last_name,
+        "email": new_contact_us_message.email,
+        "message": new_contact_us_message.message,
+        "created_at": new_contact_us_message.created_at,
+        "user_id": new_contact_us_message.user_id
+    }
 
-    try:
-        logger.debug(f"create_contact called with: {contact}")
-        created_contact = services.ContactService.create_contact(db, contact)
-        logger.debug(f"Created contact: {created_contact}")
-        return created_contact
-    except HTTPException as e:
-        logger.error(f"HTTP Exception: {e.detail}")
-        raise e
-    except Exception as e:
-        logger.error(f"Unhandled Exception: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+    response = success_response(
+        message="Contact us message created successfully",
+        data=response_data,
+        status_code=status.HTTP_201_CREATED,
+    )
+    return response
 
-@router.get("/contacts/", response_model=list[schemas.Contact])
-def read_contacts(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    contacts = services.ContactService.get_contacts(db, current_user.id, skip=skip, limit=limit)
-    return contacts
 
-@router.get("/contacts/{contact_id}", response_model=schemas.Contact)
-def read_contact(contact_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    db_contact = services.ContactService.get_contact(db, current_user.id, contact_id)
-    if db_contact is None:
-        raise HTTPException(status_code=404, detail="Contact not found")
-    return db_contact
+@contact_us.get(
+    "",
+    response_model=success_response,
+    status_code=200,
+    responses={
+        403: {"description": "Unauthorized"},
+        500: {"description": "Server Error"},
+    },
+)
+def retrieve_contact_us(
+    db: Session = Depends(get_db),
+    admin: User = Depends(user_service.get_current_super_admin),
+):
+    """
+    Retrieve all contact-us submissions from database
+    """
+
+    all_submissions = contact_us_service.fetch_all(db)
+    submissions_filtered = list(
+        map(lambda x: ContactResponseSchema.model_validate(x), all_submissions)
+    )
+    if len(submissions_filtered) == 0:
+        submissions_filtered = [{}]
+    return success_response(
+        message="Submissions retrieved successfully",
+        status_code=200,
+        data=jsonable_encoder(submissions_filtered),
+    )

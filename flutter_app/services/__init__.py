@@ -1,11 +1,17 @@
 # backend/services/__init__.py
 from .users import UserService
 from .institution import InstitutionService
-from .contact import ContactService
+from .contact_us import contact_us_service
 from .payment import PaymentService
-from .student import StudentService
+from .profile import ProfileService
 
 # Add other service imports here
 
 
-__all__ = ["UserService", "InstitutionService", "ContactService", "PaymentService", "StudentService"]
+__all__ = [
+    "UserService",
+    "InstitutionService",
+    "contact_us_service",
+    "PaymentService",
+    "ProfileService",
+]

@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from flutter_app.database import Base
 
+
 class Session(Base):
     __tablename__ = "sessions"
     id = Column(Integer, primary_key=True, index=True)

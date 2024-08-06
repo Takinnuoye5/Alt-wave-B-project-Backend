@@ -1,31 +1,61 @@
-import os
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import engine_from_config
+from sqlalchemy import pool
 from alembic import context
-from dotenv import load_dotenv
-
-load_dotenv()
-
-# Set the sqlalchemy.url value to the DATABASE_URL environment variable
-config = context.config
-database_url = os.getenv('DATABASE_URL')
-if database_url.startswith("postgres://"):
-    database_url = database_url.replace("postgres://", "postgresql://", 1)
-config.set_main_option('sqlalchemy.url', database_url)
-
-fileConfig(config.config_file_name)
-
-# Import the Base from your application
-from flutter_app.database import Base
+from decouple import config as decouple_config
 from flutter_app.models.users import User
-from flutter_app.models.contact import Contact
 from flutter_app.models.institution import Institution
-from flutter_app.models.session import Session
-from flutter_app.models.payment import Payment  # Include other models as needed
+from flutter_app.models.payment import Payment
+from flutter_app.models.profile import Profile
+from flutter_app.models.contact import Contact
+from flutter_app.models.blog import Blog
+from flutter_app.models.notifications import Notification
+from flutter_app.models.comment import Comment
+from flutter_app.models.faq import FAQ
+from flutter_app.models.oauth import OAuth
+from flutter_app.models.token_login import TokenLogin
+from flutter_app.models.activity_logs import ActivityLog
+from flutter_app.models.associations import user_institution_association
+from flutter_app.models.associations import Base
 
+
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
+config = context.config
+
+# Interpret the config file for Python logging.
+# This line sets up loggers basically.
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
+database_url = decouple_config('DATABASE_URL')
+
+# Set the SQLAlchemy URL dynamically
+config.set_main_option('sqlalchemy.url', database_url)
+# add your model's MetaData object here
+# for 'autogenerate' support
+# from myapp import mymodel
+# target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
 
-def run_migrations_offline():
+# other values from the config, defined by the needs of env.py,
+# can be acquired:
+# my_important_option = config.get_main_option("my_important_option")
+# ... etc.
+
+
+def run_migrations_offline() -> None:
+    """Run migrations in 'offline' mode.
+
+    This configures the context with just a URL
+    and not an Engine, though an Engine is acceptable
+    here as well.  By skipping the Engine creation
+    we don't even need a DBAPI to be available.
+
+    Calls to context.execute() here emit the given string to the
+    script output.
+
+    """
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
@@ -37,18 +67,28 @@ def run_migrations_offline():
     with context.begin_transaction():
         context.run_migrations()
 
-def run_migrations_online():
+
+def run_migrations_online() -> None:
+    """Run migrations in 'online' mode.
+
+    In this scenario we need to create an Engine
+    and associate a connection with the context.
+
+    """
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section),
+        config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
 
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection, target_metadata=target_metadata,
+        )
 
         with context.begin_transaction():
             context.run_migrations()
+
 
 if context.is_offline_mode():
     run_migrations_offline()

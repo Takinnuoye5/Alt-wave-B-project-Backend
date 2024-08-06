@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from flutter_app.models import session as session_models
 from datetime import datetime
 
+
 class SessionService:
     @staticmethod
     def create_session(db: Session, user_id: int):
@@ -14,11 +15,15 @@ class SessionService:
 
     @staticmethod
     def end_session(db: Session, user_id: int):
-        active_sessions = db.query(session_models.Session).filter(
-            session_models.Session.user_id == user_id,
-            session_models.Session.is_active == True
-        ).all()
-        
+        active_sessions = (
+            db.query(session_models.Session)
+            .filter(
+                session_models.Session.user_id == user_id,
+                session_models.Session.is_active == True,
+            )
+            .all()
+        )
+
         for session in active_sessions:
             session.end_time = datetime.utcnow()
             session.is_active = False
@@ -26,12 +31,16 @@ class SessionService:
 
     @staticmethod
     def get_active_sessions(db: Session):
-        return db.query(session_models.Session).filter(
-            session_models.Session.is_active == True
-        ).all()
+        return (
+            db.query(session_models.Session)
+            .filter(session_models.Session.is_active == True)
+            .all()
+        )
 
     @staticmethod
     def get_user_sessions(db: Session, user_id: int):
-        return db.query(session_models.Session).filter(
-            session_models.Session.user_id == user_id
-        ).all()
+        return (
+            db.query(session_models.Session)
+            .filter(session_models.Session.user_id == user_id)
+            .all()
+        )

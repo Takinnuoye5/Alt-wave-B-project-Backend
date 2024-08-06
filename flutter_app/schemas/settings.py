@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings
 from pydantic import EmailStr
 
+
 class Settings(BaseSettings):
     OPENAI_API_KEY: str
     MAILJET_API_KEY: str
@@ -22,5 +23,6 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
+
 
 settings = Settings()

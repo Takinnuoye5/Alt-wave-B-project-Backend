@@ -7,10 +7,15 @@ import logging
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-@router.get("/transactions/{transaction_id}/summary", response_model=schemas.TransactionSummary)
+
+@router.get(
+    "/transactions/{transaction_id}/summary", response_model=schemas.TransactionSummary
+)
 async def get_transaction_summary(transaction_id: int, db: Session = Depends(get_db)):
     try:
-        transaction_summary = services.TransactionService.get_transaction_summary(db, transaction_id)
+        transaction_summary = services.TransactionService.get_transaction_summary(
+            db, transaction_id
+        )
         logger.info(f"Retrieved transaction summary: {transaction_summary}")
         return transaction_summary
     except HTTPException as e:

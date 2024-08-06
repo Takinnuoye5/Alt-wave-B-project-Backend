@@ -3,6 +3,7 @@ from typing import Optional
 from datetime import date
 from uuid import UUID
 
+
 class StudentBase(BaseModel):
     first_name: str = Field(..., alias="firstName")
     last_name: str = Field(..., alias="lastName")
@@ -14,7 +15,7 @@ class StudentBase(BaseModel):
     class Config:
         orm_mode = True
         allow_population_by_field_name = True
-        
+
 
 class StudentCreate(StudentBase):
     pass

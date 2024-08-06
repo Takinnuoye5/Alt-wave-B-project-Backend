@@ -1,60 +1,135 @@
-from sqlalchemy.orm import Session
-from flutter_app.models.institution import Institution
-from flutter_app.schemas.institution import InstitutionCreate
 import logging
-import uuid
-from typing import Optional
+from typing import Any, Optional
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
+from fastapi import HTTPException, status
+from sqlalchemy import select
+from flutter_app.core.base.services import Service
+from flutter_app.utils.db_validators import check_model_existence, check_user_in_inst
+from flutter_app.utils.pagination import paginated_response
+from flutter_app.models.associations import user_institution_association
+from flutter_app.models.institution import Institution
+from flutter_app.models.users import User
+from flutter_app.schemas.institution import (
+    CreateInstitution,
+)
 
-logger = logging.getLogger(__name__)
 
-class InstitutionService:
-    @staticmethod
-    def create_institution(db: Session, institution: InstitutionCreate, user_id: int =  Optional[uuid.UUID]):
-        try:
-            db_institution = Institution(
-                school_name=institution.school_name,
-                country_name=institution.country_name,
-                address=institution.address,
-                payment_type=institution.payment_type,
-                contact_email=institution.contact_email,
-                user_id=user_id
+class InstitutionService(Service):
+    """Institution service functionality"""
+
+    def create(self, db: Session, schema: CreateInstitution, user: User):
+
+        # Create a new institution
+        new_institution = Institution(**schema.model_dump())
+        school_name = schema.model_dump()["school_name"]
+        country_name = schema.model_dump()["country_name"]
+        contact_email = schema.model_dump()["contact_email"]
+        address = schema.model_dump()["address"]
+        payment_type = schema.model_dump()["payment_type"]
+        self.check_by_email(db, contact_email)
+        self.check_by_name(db, school_name)
+        self.check_by_country(db, country_name)
+        self.check_by_address(db, address)
+        self.check_by_payment_type(db, payment_type)
+
+        db.add(new_institution)
+        db.commit()
+        db.refresh(new_institution)
+
+    def fetch_all(self, db: Session, **query_params: Optional[Any]):
+        """Fetch all students with option tto search using query parameters"""
+
+        query = db.query(Institution)
+
+        # Enable filter by query parameter
+        if query_params:
+            for column, value in query_params.items():
+                if hasattr(Institution, column) and value:
+                    query = query.filter(
+                        getattr(Institution, column).ilike(f"%{value}%")
+                    )
+
+        return query.all()
+
+    def fetch(self, db: Session, id: str):
+        """Fetches an institution by id"""
+
+        institution = check_model_existence(db, Institution, id)
+
+        return institution
+
+    def get_users_in_institution(self, db: Session, inst_id: str):
+        """Fetches all users in an institution"""
+
+        institution = check_model_existence(db, Institution, inst_id)
+
+        # Fetch all users associated with the organization
+        return institution.users
+
+    def paginate_users_in_institution(
+        self, db: Session, inst_id: str, page: int, per_page: int
+    ):
+        """Fetches all users in an institution"""
+
+        check_model_existence(db, Institution, inst_id)
+
+        return paginated_response(
+            db=db,
+            model=User,
+            skip=page,
+            join=user_institution_association,
+            filters={"institution_id": inst_id},
+            limit=per_page,
+        )
+
+    def get_user_institutions(self, db: Session, user_id: str):
+        """Fetches all institutions that belong to a user"""
+
+        user = check_model_existence(db, User, user_id)
+
+        # Fetch all users associated with the institution
+        return user.institutions
+
+    def check_by_email(self, db: Session, email):
+        """Fetches a user by their email"""
+
+        inst = db.query(Institution).filter(Institution.contact_email == email).first()
+
+        if inst:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="an institution with this email already exist",
             )
-            db.add(db_institution)
-            db.commit()
-            db.refresh(db_institution)
-            logger.info(f"Created institution: {db_institution}")
-            return db_institution
-        except Exception as e:
-            logger.error(f"Error creating institution: {e}")
-            db.rollback()
-            raise
 
-    @staticmethod
-    def get_institutions(db: Session, skip: int = 0, limit: int = 10):
-        try:
-            institutions = db.query(Institution).offset(skip).limit(limit).all()
-            logger.info(f"Retrieved institutions: {institutions}")
-            return institutions
-        except Exception as e:
-            logger.error(f"Error retrieving institutions: {e}")
-            raise
+        return False
 
-    @staticmethod
-    def get_institution(db: Session, institution_id: int):
-        try:
-            institution = db.query(Institution).filter(Institution.id == institution_id).first()
-            logger.info(f"Retrieved institution {institution_id}: {institution}")
-            return institution
-        except Exception as e:
-            logger.error(f"Error retrieving institution: {e}")
-            raise
+    def check_by_name(self, db: Session, name):
+        """Fetches a user by their name"""
 
-    @staticmethod
-    def get_institutions_by_country(db: Session, country_name: str):
-        try:
-            institutions = db.query(Institution).filter(Institution.country_name == country_name).all()
-            logger.info(f"Retrieved institutions for country {country_name}: {institutions}")
-            return institutions
-        except Exception as e:
-            logger.error(f"Error retrieving institutions: {e}")
-            raise
+        inst = db.query(Institution).filter(Institution.school_name == name).first()
+
+        if inst:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="an institution with this name already exist",
+            )
+
+        return False
+
+    def check_institution_exist(self, db: Session, inst_id):
+        institution = db.query(Institution).filter(Institution.id == inst_id).first()
+        if institution is None:
+            raise HTTPException(status_code=404, detail="Instituion not found")
+        else:
+            return True
+        
+        
+    def update(self):
+        return super().update()
+    
+    def delete(self):
+        return super().delete()
+
+
+institution_service = InstitutionService()

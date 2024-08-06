@@ -5,7 +5,7 @@ from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 import os
 from flutter_app.database import get_db
-from flutter_app.schemas.users import TokenData
+from flutter_app.schemas.user import TokenData
 from flutter_app.services import users as user_services
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/signin")
@@ -13,7 +13,9 @@ SECRET_KEY = os.getenv("SECRET_KEY", "mysecret")
 ALGORITHM = "HS256"
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def get_current_user(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+):
     credentials_exception = HTTPException(
         status_code=401,
         detail="Could not validate credentials",

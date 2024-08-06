@@ -1,19 +1,25 @@
-import uuid
-from sqlalchemy import Column, String, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, ForeignKey, Text, Enum
 from sqlalchemy.orm import relationship
-from flutter_app.database import Base
+from flutter_app.models.associations import user_institution_association
+from flutter_app.models.base_model import BaseTableModel
 
-class Institution(Base):
+
+
+class Institution(BaseTableModel):
     __tablename__ = "institutions"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True, unique=True)
-    school_name = Column(String, index=True)
-    country_name = Column(String, index=True)
-    address = Column(String, index=True)
-    payment_type = Column(String, index=True)
-    contact_email = Column(String, index=True)
-    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'))
+    school_name = Column(String, nullable=False, unique=True)
+    country_name = Column(String, nullable=True, unique=True)
+    payment_type = Column(String, nullable=True)
+    contact_email = Column(String, nullable=True)
+    user_id = user_id = Column(
+        String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
 
-    user = relationship("User", back_populates="institutions")
-    payments = relationship("Payment", back_populates="institution")
+    users = relationship(
+        "User", secondary=user_institution_association, back_populates="institutions"
+    )
+   
+
+    def __str__(self):
+        return self.institution_name

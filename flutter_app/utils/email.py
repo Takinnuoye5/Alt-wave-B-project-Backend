@@ -10,24 +10,17 @@ MAILJET_API_KEY = os.getenv("MAILJET_API_KEY")
 MAILJET_SECRET_KEY = os.getenv("MAILJET_SECRET_KEY")
 MAILJET_SENDER_EMAIL = os.getenv("MAILJET_SENDER_EMAIL")
 
+
 def send_email(to_email, subject, plain_text_content, html_content):
-    mailjet = Client(auth=(MAILJET_API_KEY, MAILJET_SECRET_KEY), version='v3.1')
+    mailjet = Client(auth=(MAILJET_API_KEY, MAILJET_SECRET_KEY), version="v3.1")
     data = {
-        'Messages': [
+        "Messages": [
             {
-                "From": {
-                    "Email": MAILJET_SENDER_EMAIL,
-                    "Name": "Your Name"
-                },
-                "To": [
-                    {
-                        "Email": to_email,
-                        "Name": "Recipient Name"
-                    }
-                ],
+                "From": {"Email": MAILJET_SENDER_EMAIL, "Name": "Your Name"},
+                "To": [{"Email": to_email, "Name": "Recipient Name"}],
                 "Subject": subject,
                 "TextPart": plain_text_content,
-                "HTMLPart": html_content
+                "HTMLPart": html_content,
             }
         ]
     }

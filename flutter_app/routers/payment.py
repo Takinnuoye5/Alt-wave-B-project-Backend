@@ -1,49 +1,91 @@
-# routers/payment.py
-from fastapi import APIRouter, Depends, HTTPException, Form, Request
+from fastapi import Depends, APIRouter, status, Query, HTTPException
 from sqlalchemy.orm import Session
-from pydantic import condecimal
-from decimal import Decimal
-from flutter_app import schemas
-from flutter_app.services.payment import PaymentService  # Correct import
-from flutter_app.database import get_db
-from flutter_app.middleware import get_current_user
+from typing import Annotated
+
+from flutter_app.utils.success_response import success_response
+from flutter_app.schemas.payment import PaymentListResponse, PaymentResponse
+from flutter_app.services.payment import PaymentService
+from flutter_app.services.users import user_service
+from flutter_app.db.database import get_db
 from flutter_app.models import User
-import logging
 
-router = APIRouter()
-logger = logging.getLogger(__name__)
+payment = APIRouter(prefix="/payments", tags=["Payments"])
 
-@router.post("/payments/", response_model=schemas.Payment)
-async def create_payment(
-    request: Request,
+
+@payment.get(
+    "/current-user", status_code=status.HTTP_200_OK, response_model=PaymentListResponse
+)
+def get_payments_for_current_user(
+    current_user: User = Depends(user_service.get_current_user),
+    limit: Annotated[int, Query(ge=1, description="Number of payments per page")] = 10,
+    page: Annotated[int, Query(ge=1, description="Page number (starts from 1)")] = 1,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-    payment_by: str = Form(None),
-    payment_for: str = Form(None),
-    payment_method: str = Form(None),
-    country_from: str = Form(None),
-    amount: condecimal(max_digits=10, decimal_places=2) = Form(None)
 ):
-    if request.headers.get("Content-Type") == "application/x-www-form-urlencoded":
-        payment = schemas.PaymentCreate(
-            payment_by=payment_by,
-            payment_for=payment_for,
-            payment_method=payment_method,
-            country_from=country_from,
-            amount=Decimal(amount)
+    """
+    Endpoint to retrieve a paginated list of payments of ``current_user``.
+
+    Query parameter:
+        - limit: Number of payment per page (default: 10, minimum: 1)
+        - page: Page number (starts from 1)
+    """
+    payment_service = PaymentService()
+
+    # FETCH all payments for current user
+    payments = payment_service.fetch_by_user(
+        db, user_id=current_user.id, limit=limit, page=page
+    )
+
+    # GET number of payments
+    num_of_payments = len(payments)
+
+    if not num_of_payments:
+        # RETURN not found message
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Payments not found for user"
         )
-    else:
-        json_data = await request.json()
-        payment = schemas.PaymentCreate(**json_data)
-    
-    try:
-        logger.info(f"Received data: {payment}")
-        created_payment = PaymentService.create_payment(db, payment, user_id=current_user.id, institution_id=None)
-        logger.info(f"Created payment: {created_payment}")
-        return created_payment
-    except HTTPException as e:
-        logger.error(f"HTTP Exception: {e.detail}")
-        raise e
-    except Exception as e:
-        logger.error(f"Unhandled Exception: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+    # GET total number of pages based on number of payments/limit per page
+    total_pages = int(num_of_payments / limit) + (num_of_payments % limit > 0)
+
+    # COMPUTE payment data into a list
+    payment_data = [
+        {
+            "amount": str(pay.amount),
+            "currency": pay.currency,
+            "status": pay.status,
+            "method": pay.method,
+            "created_at": pay.created_at.isoformat(),
+        }
+        for pay in payments
+    ]
+
+    # GATHER all data in a dict
+    data = {
+        "pagination": {
+            "limit": limit,
+            "current_page": page,
+            "total_pages": total_pages,
+            "total_items": num_of_payments,
+        },
+        "payments": payment_data,
+        "user_id": current_user.id,
+    }
+
+    # RETURN all data with success message
+    return success_response(
+        status_code=status.HTTP_200_OK,
+        message="Payments fetched successfully",
+        data=data,
+    )
+
+
+@payment.get("/{payment_id}", response_model=PaymentResponse)
+async def get_payment(payment_id: str, db: Session = Depends(get_db)):
+    '''
+    Endpoint to retrieve a payment by its ID.
+    '''
+
+    payment_service = PaymentService()
+    payment = payment_service.get_payment_by_id(db, payment_id)
+    return payment
+
