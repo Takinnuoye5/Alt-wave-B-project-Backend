@@ -125,6 +125,47 @@ class InstitutionService(Service):
             return True
         
         
+    def check_by_country(self, db:Session, inst_id):
+        """Fetches a user by their country"""
+
+        inst = db.query(Institution).filter(Institution.country_name == inst_id).first()
+
+        if inst:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="an institution with this country already exist",
+            )
+
+        return False
+    
+    def check_by_address(self, db:Session, inst_id):
+        """Fetches a user by their address"""
+
+        inst = db.query(Institution).filter(Institution.address == inst_id).first()
+
+        if inst:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="an institution with this address already exist",
+            )
+
+        return False
+    
+    
+    def check_by_payment_type(self, db:Session, inst_id):
+        """Fetches a user by their payment type"""
+
+        inst = db.query(Institution).filter(Institution.payment_type == inst_id).first()
+
+        if inst:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="an institution with this payment type already exist",
+            )
+
+        return False
+        
+        
     def update(self):
         return super().update()
     

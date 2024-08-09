@@ -76,7 +76,7 @@ async def update_institution(
 
     return success_response(
         status_code=status.HTTP_200_OK,
-        message="Organization updated successfully",
+        message="institution updated successfully",
         data=jsonable_encoder(updated_institution),
     )
 
@@ -89,7 +89,7 @@ def get_all_institutions(
     insts = institution_service.fetch_all(db)
     return success_response(
         status_code=status.HTTP_200_OK,
-        message="Retrived all organizations information Successfully",
+        message="Retrived all institution information Successfully",
         data=jsonable_encoder(insts),
     )
 
