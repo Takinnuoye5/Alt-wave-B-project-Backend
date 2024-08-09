@@ -21,7 +21,7 @@ class InstitutionService(Service):
     def create(self, db: Session, schema: CreateInstitution, user: User):
 
         # Create a new institution
-        new_institution = Institution(**schema.model_dump())
+        new_institution = Institution(**schema.model_dump(), user_id=user.id)
         school_name = schema.model_dump()["school_name"]
         country_name = schema.model_dump()["country_name"]
         contact_email = schema.model_dump()["contact_email"]
