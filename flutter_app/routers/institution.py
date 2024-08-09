@@ -41,8 +41,16 @@ def create_institution(
 
     return success_response(
         status_code=status.HTTP_201_CREATED,
-        message="Organization created successfully",
-        data=jsonable_encoder(new_inst),
+        message="Institution created successfully",
+        data={
+            "institution": jsonable_encoder(
+                new_inst,
+                exclude=[
+                    "user_id",
+                    "updated_at",
+                ],
+            )
+        },
     )
 
 
@@ -105,6 +113,5 @@ async def delete_institution(
         institution_service.delete(db, id=org_id)
         return success_response(
             status_code=status.HTTP_200_OK,
-            message="institution with ID {inst_id} deleted successfully"
+            message="institution with ID {inst_id} deleted successfully",
         )
-
