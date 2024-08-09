@@ -10,6 +10,7 @@ class Institution(BaseTableModel):
 
     school_name = Column(String, nullable=False, unique=True)
     country_name = Column(String, nullable=True, unique=True)
+    address = Column(Text, nullable=True)
     payment_type = Column(String, nullable=True)
     contact_email = Column(String, nullable=True)
     user_id = user_id = Column(
