@@ -23,4 +23,8 @@ class Institution(BaseTableModel):
    
 
     def __str__(self):
-        return self.institution_name
+        return self.school_name
+
+
+
+
