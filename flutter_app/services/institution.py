@@ -35,6 +35,8 @@ class InstitutionService(Service):
         db.add(new_institution)
         db.commit()
         db.refresh(new_institution)
+        
+        return new_institution
 
     def fetch_all(self, db: Session, **query_params: Optional[Any]):
         """Fetch all students with option tto search using query parameters"""
