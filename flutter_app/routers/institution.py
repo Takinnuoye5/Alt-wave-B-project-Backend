@@ -43,7 +43,7 @@ def create_institution(
         status_code=status.HTTP_201_CREATED,
         message="Institution created successfully",
         data={
-            "institution": jsonable_encoder(
+            "new_inst": jsonable_encoder(
                 new_inst,
                 exclude=[
                     "user_id",

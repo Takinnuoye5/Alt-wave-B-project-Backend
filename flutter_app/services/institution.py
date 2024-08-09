@@ -8,17 +8,16 @@ from flutter_app.core.base.services import Service
 from flutter_app.utils.db_validators import check_model_existence, check_user_in_inst
 from flutter_app.utils.pagination import paginated_response
 from flutter_app.models.associations import user_institution_association
-from flutter_app.models.institution import Institution
+from flutter_app.models import Institution
+from flutter_app.schemas import institution
 from flutter_app.models.users import User
-from flutter_app.schemas.institution import (
-    CreateInstitution,
-)
+
 
 
 class InstitutionService(Service):
     """Institution service functionality"""
 
-    def create(self, db: Session, schema: CreateInstitution, user: User):
+    def create(self, db: Session, schema: institution.CreateInstitution, user: User):
 
         # Create a new institution
         new_institution = Institution(**schema.model_dump(), user_id=user.id)
