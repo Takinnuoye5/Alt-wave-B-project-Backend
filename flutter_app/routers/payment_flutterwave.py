@@ -30,7 +30,7 @@ async def pay_with_flutterwave(
     FLUTTERWAVE_URL = 'https://api.flutterwave.com/v3/payments'
     header = {'Authorization': 'Bearer ' + SECRET_KEY}
     transaction_id = str(uuid7())
-    plan = check_model_existence(db, BillingPlan, request.plan_id)
+    # plan = check_model_existence(db, BillingPlan, request.plan_id)
     data = {
         "tx_ref": transaction_id,
         "amount": float(plan.price),
