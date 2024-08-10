@@ -17,4 +17,4 @@ class BillingPlan(BaseTableModel):
     description = Column(String, nullable=True)
     features = Column(ARRAY(String), nullable=False)
 
-    institution = relationship("Organization", back_populates="billing_plans")
+    institution = relationship("Institution", back_populates="billing_plans")
