@@ -9,7 +9,7 @@ from flutter_app.routers.blog import blog
 from flutter_app.routers.comment import comment
 from flutter_app.routers.faq import faq
 from flutter_app.routers.notification_settings import notification_setting
-from flutter_app.routers.payment_flutterwave import payment_flutterwave
+from flutter_app.routers.payment_flutterwave import flutterwave_router
 from flutter_app.routers.activity_logs import activity_logs
 
 
@@ -25,7 +25,7 @@ api_flutter_one.include_router(blog)
 api_flutter_one.include_router(comment)
 api_flutter_one.include_router(faq)
 api_flutter_one.include_router(notification_setting)
-api_flutter_one.include_router(payment_flutterwave)
+api_flutter_one.include_router(flutterwave_router)
 api_flutter_one.include_router(activity_logs)
 
 
