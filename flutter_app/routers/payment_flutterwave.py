@@ -15,10 +15,7 @@ import requests
 from flutter_app.routers.payment import payment
 from flutter_app.utils.setting import settings
 
-payment_flutterwave = APIRouter(
-    prefix="/payment/flutterwave",
-    tags=["Payments"],
-  )
+flutterwave_router = APIRouter()
 
 @payment.post("/flutterwave", response_model=success_response)
 async def pay_with_flutterwave(

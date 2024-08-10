@@ -44,7 +44,7 @@ class PaymentListResponse(BaseModel):
 
 class PaymentDetail(BaseModel):
     institution_id: str
-    plan_id: str
+    # plan_id: str
     full_name: str
-    billing_option: str
+    # billing_option: str
     redirect_url: str
