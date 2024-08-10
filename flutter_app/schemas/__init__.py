@@ -2,7 +2,6 @@ from .institution import CreateInstitution, InstitutionBase
 from .user import UserCreate, UserBase, Token
 from .contact import Contact, ContactCreate
 from .payment import PaymentBase
-from .payment_method import PaymentMethod, PaymentMethodCreate
 from .student import Student
 from .transaction import TransactionSummary
 
