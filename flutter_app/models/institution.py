@@ -20,6 +20,9 @@ class Institution(BaseTableModel):
     users = relationship(
         "User", secondary=user_institution_association, back_populates="institutions"
     )
+
+    billing_plans = relationship("BillingPlan", back_populates="institution")
+    
    
 
     def __str__(self):
