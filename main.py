@@ -31,6 +31,7 @@ email_templates = Jinja2Templates(directory='api/core/dependencies/email/templat
 origins = [
     "http://localhost:3000",
     "http://localhost:3001",
+    "http://localhost:5173"
 ]
 
 
