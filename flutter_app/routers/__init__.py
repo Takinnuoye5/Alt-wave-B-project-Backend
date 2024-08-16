@@ -11,6 +11,7 @@ from flutter_app.routers.billing_plan import bill_plan
 from flutter_app.routers.faq import faq
 from flutter_app.routers.notification_settings import notification_setting
 from flutter_app.routers.payment_flutterwave import flutterwave_router
+from flutter_app.routers.profile import profile
 from flutter_app.routers.activity_logs import activity_logs
 
 
@@ -29,6 +30,7 @@ api_flutter_one.include_router(notification_setting)
 api_flutter_one.include_router(flutterwave_router)
 api_flutter_one.include_router(activity_logs)
 api_flutter_one.include_router(bill_plan)
+api_flutter_one.include_router(profile)
 
 
 
