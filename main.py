@@ -1,3 +1,4 @@
+
 import uvicorn
 import os
 from sqlalchemy.exc import IntegrityError
@@ -33,6 +34,7 @@ origins = [
     "http://localhost:3001",
     "http://localhost:4173",
     "http://localhost:5173"
+    "https://altwave-rt2d.vercel.app"
 ]
 
 
