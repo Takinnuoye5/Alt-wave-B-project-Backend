@@ -4,6 +4,7 @@ from flutter_app.utils.success_response import success_response
 from flutter_app.models.users import User
 from flutter_app.schemas.profile import ProfileCreateUpdate
 from flutter_app.db.database import get_db
+from flutter_app.schemas.institution import CreateInstitution
 from flutter_app.schemas.user import DeactivateUserSchema
 from flutter_app.services.users import user_service
 from flutter_app.services.profile import profile_service
@@ -86,22 +87,22 @@ def update_payment_information(
         data=updated_profile.to_dict(),
     )
 
+
 # Endpoint to update institution information
-@profile.patch("/institution-information", status_code=status.HTTP_200_OK, response_model=success_response)
+@profile.patch("/institution-information", status_code=status.HTTP_200_OK,          response_model=success_response)
 def update_institution_information(
-    schema: ProfileCreateUpdate,
+    schema: CreateInstitution,  # Use CreateInstitution schema here
     db: Session = Depends(get_db),
     current_user: User = Depends(user_service.get_current_user),
 ):
-    update_data = ProfileCreateUpdate(
-        institution_information=schema.institution_information
-    )
-    updated_profile = profile_service.update(db, schema=update_data, user_id=current_user.id)
+    # Handle the update logic here using schema
+    updated_profile = profile_service.update(db, schema=schema, user_id=current_user.id)
     return success_response(
         status_code=status.HTTP_200_OK,
         message="Institution information updated successfully",
         data=updated_profile.to_dict(),
     )
+
 
 # Additional endpoints for other sections can be added here, following a similar pattern.
 
