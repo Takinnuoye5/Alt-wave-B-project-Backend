@@ -14,7 +14,7 @@ class VirtualCardService:
             card_style=card_data.card_style,
             top_up_amount=card_data.top_up_amount,
             currency=card_data.currency,
-            user_id=card_data.user_id  # Ensure the user_id is passed correctly
+            user_id=user_id
         )
         self.db.add(new_card)
         self.db.commit()

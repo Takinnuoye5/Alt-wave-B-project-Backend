@@ -18,8 +18,7 @@ def create_virtual_card(
 ):
     service = VirtualCardService(db)  # Pass the `db` session to the service
     # Assign the current user's ID to the card
-    card_data.user_id = current_user.id  # Correctly assign the user_id
-    new_card = service.create_card(card_data)
+    new_card = service.create_card(card_data, current_user.id)  # Pass the user_id separately
     return success_response(
         status_code=status.HTTP_201_CREATED,
         message="Virtual card created successfully",
