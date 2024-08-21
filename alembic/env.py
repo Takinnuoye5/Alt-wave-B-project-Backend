@@ -16,6 +16,7 @@ from flutter_app.models.oauth import OAuth
 from flutter_app.models.token_login import TokenLogin
 from flutter_app.models.activity_logs import ActivityLog
 from flutter_app.models.associations import user_institution_association
+from flutter_app.models.card import VirtualCard
 from flutter_app.models.associations import Base
 
 

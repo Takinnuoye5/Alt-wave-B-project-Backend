@@ -169,3 +169,4 @@ cython_debug/
 versions_backup/
 .vercel
 
+index.html

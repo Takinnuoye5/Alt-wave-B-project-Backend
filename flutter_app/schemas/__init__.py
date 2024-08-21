@@ -4,6 +4,7 @@ from .contact import Contact, ContactCreate
 from .payment import PaymentBase
 from .student import Student
 from .transaction import TransactionSummary
+from .card import VirtualCardCreate, VirtualCardResponse
 
 from pydantic import BaseModel
 
