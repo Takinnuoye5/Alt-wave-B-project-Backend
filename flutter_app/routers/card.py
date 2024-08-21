@@ -28,7 +28,7 @@ def create_virtual_card(
 
 @card_router.get("/virtual-cards/{card_id}", response_model=VirtualCardResponse)
 def get_virtual_card(
-    card_id: int, 
+    card_id: str, 
     db: Session = Depends(get_db),
     current_user: User = Depends(user_service.get_current_user)  # Add authorization
 ):
