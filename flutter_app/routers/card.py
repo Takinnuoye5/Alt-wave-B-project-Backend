@@ -14,17 +14,18 @@ card_router = APIRouter(prefix="/cards", tags=["Card"])
 def create_virtual_card(
     card_data: VirtualCardCreate, 
     db: Session = Depends(get_db),
-    current_user: User = Depends(user_service.get_current_user)  # Add authorization
+    current_user: User = Depends(user_service.get_current_user)  # Get the authenticated user
 ):
     service = VirtualCardService(db)  # Pass the `db` session to the service
     # Assign the current user's ID to the card
-    card_data.user_id = current_user.id(card_data, current_user.id)
+    card_data.user_id = current_user.id  # Correctly assign the user_id
     new_card = service.create_card(card_data)
     return success_response(
         status_code=status.HTTP_201_CREATED,
         message="Virtual card created successfully",
         data=new_card
     )
+
 
 @card_router.get("/virtual-cards/{card_id}", response_model=VirtualCardResponse)
 def get_virtual_card(
