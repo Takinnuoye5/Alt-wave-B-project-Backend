@@ -1,4 +1,4 @@
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from datetime import datetime, timezone
 from flutter_app.db.database import get_db
 from flutter_app.models.users import User
@@ -163,7 +163,7 @@ class GoogleOauthServices(Service):
 
     def create_new_user(
         self, google_response: dict, db: Annotated[Session, Depends(get_db)]
-    ) -> Union[User, bool]:
+    ):
         """
         Creates a new user and their associated profile and OAuth data.
 
@@ -180,25 +180,13 @@ class GoogleOauthServices(Service):
             new_user = User(
                 first_name=google_response.get("given_name"),
                 last_name=google_response.get("family_name"),
-                email=google_response.get("email"),
-                avatar_url=google_response.get("picture")
+                email=google_response.get("email")
             )
-            db.add(new_user)
+            new_user.update_last_login()
+            profile = Profile(user_id=new_user.id)
+            db.add_all([new_user, profile])
             db.commit()
 
-            profile = Profile(user_id=new_user.id, avatar_url=google_response.get("picture"))
-            oauth_data = OAuth(
-                provider="google",
-                user_id=new_user.id,
-                sub=google_response.get("sub"),
-                access_token=user_service.create_access_token(new_user.id),
-                refresh_token=user_service.create_refresh_token(new_user.id)
-            )
-            db.add_all([profile, oauth_data])
-            db.commit()
-
-            db.refresh(new_user)
             return new_user
-        except Exception:
-            db.rollback()
-            return False
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error {e}")

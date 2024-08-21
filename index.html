@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer-when-downgrade">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Sign-In Test</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -11,7 +12,7 @@
 
     <!-- Google Sign-In Button -->
     <div id="g_id_onload"
-         data-client_id="908643154412-802fueufv473r4v6rtm2itr5n2e6ppan.apps.googleusercontent.com"
+         data-client_id="1073252734008-7hcm78qd5c72lsfagh081qspat4k1ach.apps.googleusercontent.com"
          data-callback="handleCredentialResponse">
     </div>
     <div class="g_id_signin" data-type="standard"></div>
@@ -22,7 +23,7 @@
             console.log("Encoded JWT ID token: " + response.credential);
 
             // You can send this ID token to your server via an API call for validation
-            fetch('https://994f-102-88-82-41.ngrok-free.app/api/flutter_app/auth/google', {
+            fetch('https://alt-wave-b-project-backend.onrender.com/api/flutter_app/auth/google', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
