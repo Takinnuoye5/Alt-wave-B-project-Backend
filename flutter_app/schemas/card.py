@@ -8,7 +8,6 @@ class VirtualCardCreate(BaseModel):
     card_style: str  # Preferred card style
     top_up_amount: int  # Initial top-up amount
     currency: str  # Currency type, e.g., 'USD'
-    user_id: Optional[str] = None  # Add this line if it doesn't exist
     
 
 class VirtualCardResponse(BaseModel):
