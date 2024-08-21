@@ -7,14 +7,14 @@ class VirtualCardService:
     def __init__(self, db: Session):
         self.db = db
 
-    def create_card(self, card_data: VirtualCardCreate):
+    def create_card(self, card_data: VirtualCardCreate, user_id:str):
         new_card = VirtualCard(
             description=card_data.description,
             card_type=card_data.card_type,
             card_style=card_data.card_style,
             top_up_amount=card_data.top_up_amount,
             currency=card_data.currency,
-            user_id=card_data.user_id  # Assign the user_id here
+            user_id=user_id  # Assign the user_id here
         )
         self.db.add(new_card)
         self.db.commit()
