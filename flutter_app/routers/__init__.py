@@ -4,7 +4,7 @@ from flutter_app.routers.auth import auth
 from flutter_app.routers.institution import institution
 from flutter_app.routers.contact import contact_us
 from flutter_app.routers.payment import payment
-from flutter_app.routers.google_login import google_auth
+from flutter_app.routers.google_auth import google_auth
 from flutter_app.routers.blog import blog
 from flutter_app.routers.comment import comment
 from flutter_app.routers.billing_plan import bill_plan
