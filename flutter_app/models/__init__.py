@@ -7,6 +7,7 @@ from .session import Session
 from.blog import Blog
 from.notifications import Notification
 from .card import VirtualCard
+from .oauth import OAuth
 
 
 __all__ = [
@@ -18,5 +19,7 @@ __all__ = [
     "Profile",
     "Blog",
     "Notification",
-    "VirtualCard",  # Add other models here as needed.
+    "VirtualCard",
+    "OAuth"
+    # Add other models here as needed.
 ]

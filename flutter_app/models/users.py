@@ -3,6 +3,7 @@
 
 from sqlalchemy import Column, String, text, Boolean
 from sqlalchemy.orm import relationship
+from flutter_app.models.oauth import OAuth
 from flutter_app.models.associations import user_institution_association
 from flutter_app.models.base_model import BaseTableModel
 
