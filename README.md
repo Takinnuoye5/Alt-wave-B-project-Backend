@@ -27,8 +27,8 @@ Before setting up the project, ensure you have the following:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/AdamsRuth1/Tuition-By-Flutter.git
-cd Tuition-By-Flutter/backend
+git clone https://github.com/Takinnuoye5/Alt-wave-B-project-Backend
+cd Alt-wave-B-project-Backend
 
 
 2. python -m venv tuitionenv
