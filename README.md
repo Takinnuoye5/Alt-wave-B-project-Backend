@@ -153,6 +153,8 @@ Response:
   "last_name": "Doe",
   "phone_number": "1234567890"
 }
+
+```
 Authentication
 Sign In
 Endpoint: POST /api/auth/signin
@@ -161,20 +163,22 @@ Description: Authenticates a user and returns a JWT token.
 
 Request Body:
 
-json
+```json
 
 {
   "email": "user@example.com",
   "password": "yourpassword"
 }
+```
 Response:
 
-json
+```json
 
 {
   "access_token": "your_access_token",
   "token_type": "bearer"
 }
+```
 Google OAuth Sign In
 Endpoint: POST /api/auth/signin/google
 
@@ -182,59 +186,23 @@ Description: Handles Google OAuth sign-in.
 
 Request Body:
 
-json
+```json
 
 {
   "token": "google_oauth_token"
 }
+```
 Response:
 
-json
+```json
 
 {
   "access_token": "your_access_token",
   "token_type": "bearer"
 }
-Apple OAuth Sign In
-Endpoint: POST /api/auth/signin/apple
+```
 
-Description: Handles Apple OAuth sign-in.
-
-Request Body:
-
-json
-
-{
-  "token": "apple_oauth_token"
-}
-Response:
-
-json
-
-{
-  "access_token": "your_access_token",
-  "token_type": "bearer"
-}
-Chat with GPT-3.5
-Endpoint: POST /api/auth/chat
-
-Description: Sends a message to the GPT-3.5 model and returns a generated response.
-
-Request Body:
-
-json
-
-{
-  "message": "Hello, how are you?"
-}
-Response:
-
-json
-
-{
-  "response": "I'm an AI model created by OpenAI. How can I assist you today?"
-}
-Payments
+## Payments
 Initiate Payment with Flutterwave
 Endpoint: POST /payments/flutterwave
 
@@ -242,26 +210,30 @@ Description: Initializes a payment with Flutterwave.
 
 Request Body:
 
-json
+```json
 
 {
   "plan_id": "your_plan_id",
   "redirect_url": "https://your-redirect-url.com"
 }
+```
 Response:
 
-json
+```json
 
 {
   "payment_url": "https://flutterwave.com/pay/somepaymentlink"
 }
-Running Tests
+```
+## Running Tests
 You can run the tests using pytest:
 ```
 
 bash
 
 pytest tests/
+
+```
 
 ## Contribution
 
@@ -277,3 +249,5 @@ This project is licensed under the MIT License.
 This updated README provides a clearer structure, more detailed installation and usage instructions, and covers additional features of your application. It is now easier to follow for both developers and users of your backend API.
 
 If you need any further updates or additional information in the README, feel free to ask!
+
+```
