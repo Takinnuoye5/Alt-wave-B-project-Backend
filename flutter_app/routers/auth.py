@@ -31,10 +31,10 @@ def register(background_tasks: BackgroundTasks, response: Response, user_schema:
 
     # Send email in the background
     background_tasks.add_task(
-        send_email, 
+        send_email,
         recipient=user.email,
         template_name='welcome.html',
-        subject='Welcome to HNG Boilerplate',
+        subject='Welcome to Tuition by Flutterwave',
         context={
             'first_name': user.first_name,
             'last_name': user.last_name

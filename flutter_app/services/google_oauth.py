@@ -2,7 +2,6 @@ from fastapi import BackgroundTasks, Depends, HTTPException
 from flutter_app.core.dependencies.email_sender import send_email
 from flutter_app.db.database import get_db
 from flutter_app.models.users import User
-from flutter_app.models.users import User
 from flutter_app.models.profile import Profile
 from flutter_app.core.base.services import Service
 from sqlalchemy.orm import Session
@@ -87,9 +86,9 @@ class GoogleOauthServices(Service):
 
     def create_new_user(
         self, 
-        google_response: dict,
+        google_response: dict, 
         db: Annotated[Session, Depends(get_db)]
-    ):
+        ):
         """
         Creates a new user and their associated profile and OAuth data.
 

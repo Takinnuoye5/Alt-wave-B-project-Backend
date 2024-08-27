@@ -17,6 +17,8 @@ from flutter_app.models.token_login import TokenLogin
 from flutter_app.models.activity_logs import ActivityLog
 from flutter_app.models.associations import user_institution_association
 from flutter_app.models.card import VirtualCard
+from flutter_app.models.email_template import EmailTemplate
+from flutter_app.models.billing_plan import BillingPlan
 from flutter_app.models.associations import Base
 
 

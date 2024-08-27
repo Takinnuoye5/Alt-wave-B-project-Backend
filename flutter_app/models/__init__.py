@@ -4,10 +4,12 @@ from .profile import Profile
 from .contact import Contact
 from .institution import Institution
 from .session import Session
-from.blog import Blog
-from.notifications import Notification
+from .blog import Blog
+from .notifications import Notification
 from .card import VirtualCard
 from .oauth import OAuth
+from .email_template import EmailTemplate
+from .billing_plan import BillingPlan
 
 
 __all__ = [
@@ -20,6 +22,9 @@ __all__ = [
     "Blog",
     "Notification",
     "VirtualCard",
-    "OAuth"
+    "OAuth",
+    "EmailTemplate",
+    "BillingPlan",
+    
     # Add other models here as needed.
 ]

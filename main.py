@@ -27,7 +27,7 @@ app = FastAPI(lifespan=lifespan)
 
 
 # Set up email templates and css static files
-email_templates = Jinja2Templates(directory='api/core/dependencies/email/templates')
+email_templates = Jinja2Templates(directory='flutter_app/core/dependencies/email/templates')
 
 origins = [
     "http://localhost:3000",
