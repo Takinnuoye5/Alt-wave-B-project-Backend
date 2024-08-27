@@ -11,7 +11,7 @@ from flutter_app.schemas.user import Token
 from flutter_app.schemas.user import LoginRequest, UserCreate, EmailRequest
 from flutter_app.schemas.token import TokenRequest
 from flutter_app.schemas.user import UserCreate, MagicLinkRequest
-from flutter_app.database import get_db
+from flutter_app.db.database import get_db
 from flutter_app.services.users import user_service
 from flutter_app.services.auth import AuthService
 

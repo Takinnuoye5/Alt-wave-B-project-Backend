@@ -14,6 +14,8 @@ from flutter_app.routers.payment_flutterwave import flutterwave_router
 from flutter_app.routers.profile import profile
 from flutter_app.routers.card import card_router
 from flutter_app.routers.activity_logs import activity_logs
+from flutter_app.routers.email_routes import email_sender
+from flutter_app.routers.email_template import email_template
 
 
 api_flutter_one = APIRouter(prefix="/api/flutter_app")
@@ -33,6 +35,8 @@ api_flutter_one.include_router(activity_logs)
 api_flutter_one.include_router(bill_plan)
 api_flutter_one.include_router(profile)
 api_flutter_one.include_router(card_router)
+api_flutter_one.include_router(email_sender)
+api_flutter_one.include_router(email_template)
 
 
 

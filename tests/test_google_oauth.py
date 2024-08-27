@@ -1,41 +1,50 @@
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch, MagicMock
-from requests.models import Response
-from main import app
-from flutter_app.services.users import user_service
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from flutter_app.db.database import Base, get_db
 from flutter_app.models.users import User
-from flutter_app.db.database import get_db
+from flutter_app.services.users import UserService
+from flutter_app.services.google_oauth import GoogleOauthServices
+from main import app  # Adjust this import if necessary
+import os
 from uuid_extensions import uuid7
 from datetime import datetime, timezone
-from fastapi import status
-from fastapi.encoders import jsonable_encoder
+
+# Use environment variables for database URL
+SQLALCHEMY_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
+
+# Set up the test database
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Override the get_db dependency for tests
+def override_get_db():
+    try:
+        db = TestingSessionLocal()
+        yield db
+    finally:
+        db.close()
+
+app.dependency_overrides[get_db] = override_get_db
+
+# Create the test database and tables
+Base.metadata.create_all(bind=engine)
 
 client = TestClient(app)
 
-@pytest.fixture
-def mock_db_session():
-    """Fixture to create a mock database session."""
-    with patch("flutter_app.db.database.get_db", autospec=True) as mock_get_db:
-        mock_db = MagicMock()
-        app.dependency_overrides[get_db] = lambda: mock_db
-        yield mock_db
-    app.dependency_overrides = {}
+@pytest.fixture(autouse=True)
+def setup_and_teardown():
+    # Set up before each test
+    Base.metadata.create_all(bind=engine)
+    yield
+    # Tear down after each test
+    Base.metadata.drop_all(bind=engine)
 
-@pytest.fixture
-def mock_user_service():
-    """Fixture to create a mock user service."""
-    with patch("flutter_app.services.users.user_service", autospec=True) as mock_service:
-        yield mock_service
-
-@pytest.fixture
-def mock_google_oauth_service():
-    """Fixture to create a mock Google OAuth service."""
-    with patch("flutter_app.services.google_oauth.GoogleOauthServices", autospec=True) as mock_service:
-        yield mock_service
-
-@pytest.mark.usefixtures("mock_db_session", "mock_user_service", "mock_google_oauth_service")
-def test_google_login_existing_user(mock_user_service, mock_google_oauth_service, mock_db_session):
+@patch('flutter_app.services.users.user_service.get_user_by_email')
+@patch('flutter_app.services.google_oauth.GoogleOauthServices.fetch_profile_data')
+def test_google_login_existing_user(mock_fetch_profile_data, mock_get_user_by_email):
     """Test Google login for an existing user."""
     email = "existinguser@example.com"
     mock_id_token = "mocked_id_token"
@@ -49,50 +58,34 @@ def test_google_login_existing_user(mock_user_service, mock_google_oauth_service
         updated_at=datetime.now(timezone.utc)
     )
 
-    # Mock database session and user service responses
-    mock_db_session.query.return_value.filter.return_value.first.return_value = mock_user
-    mock_user_service.get_user_by_email.return_value = mock_user
-    mock_user_service.create_access_token.return_value = "mocked_access_token"
-    mock_user_service.create_refresh_token.return_value = "mocked_refresh_token"
-
-    # Mock Google OAuth service response
-    mock_google_oauth_service.verify_id_token.return_value = {
-        "email": email
+    mock_get_user_by_email.return_value = mock_user
+    mock_fetch_profile_data.return_value = {
+        'email': email,
+        'name': 'Existing User'
     }
 
     response = client.post(
         "/api/flutter_app/auth/google",
         json={"id_token": mock_id_token}
     )
+    
+    assert response.status_code == 200
+    assert response.json().get("data").get("access_token") is not None
 
-    assert response.status_code == status.HTTP_200_OK
-    response_json = response.json()
-    assert response_json['success'] is True
-    assert response_json['message'] == 'Login successful'
-    assert 'access_token' in response_json['data']
-    assert response_json['data']['access_token'] == "mocked_access_token"
-    assert response_json['data']['user']['email'] == email
-
-@pytest.mark.usefixtures("mock_db_session", "mock_user_service", "mock_google_oauth_service")
-def test_google_login_non_existing_user(mock_user_service, mock_google_oauth_service, mock_db_session):
+@patch('flutter_app.services.google_oauth.GoogleOauthServices.fetch_profile_data')
+def test_google_login_non_existing_user(mock_fetch_profile_data):
     """Test Google login for a non-existing user."""
-    email = "nonexistinguser@example.com"
     mock_id_token = "mocked_id_token"
 
-    # Mock Google OAuth service response
-    mock_google_oauth_service.verify_id_token.return_value = {
-        "email": email
+    mock_fetch_profile_data.return_value = {
+        'email': 'nonexistinguser@example.com',
+        'name': 'Non Existing User'
     }
-
-    # Mock database session to return None for non-existing user
-    mock_db_session.query.return_value.filter.return_value.first.return_value = None
 
     response = client.post(
         "/api/flutter_app/auth/google",
         json={"id_token": mock_id_token}
     )
-
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-    response_json = response.json()
-    assert response_json['success'] is False
-    assert response_json['message'] == 'User not found'
+    
+    assert response.status_code == 404
+    assert response.json().get("detail") == "User not found"

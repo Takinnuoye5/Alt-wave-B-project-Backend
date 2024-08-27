@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from flutter_app.database import get_db
+from flutter_app.db.database import get_db
 from flutter_app.models import VirtualCard
 from flutter_app.services.card import VirtualCardService
 from flutter_app.services.users import user_service
