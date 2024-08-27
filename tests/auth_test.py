@@ -8,7 +8,7 @@ from flutter_app.db.database import Base, get_db
 import os
 
 # Use environment variables for database URL
-SQLALCHEMY_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "postgresql://flutter_app_database_user:3AbQa2MxsKqJjP6yxmu1DdOdLNniBxpr@dpg-cqpfk2rv2p9s73cbarj0-a.virginia-postgres.render.com/flutter_app_database")
+SQLALCHEMY_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
 
 # Set up the test database
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
